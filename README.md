@@ -1,1 +1,25 @@
 # Machin-Project2
+core/
+    src/
+        main.c
+        sysinit.c
+        interrupts.c
+    include/
+        main.h
+        sysinit.h
+        interrupts.h
+        ...
+module1/
+    src/
+        file1_1.c
+        ...
+    include/
+        file1_1.h
+        ...
+module2/
+    src/
+        file2_1.c
+        ...
+    include/
+        file2_1.h
+        ...
