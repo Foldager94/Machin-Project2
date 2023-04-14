@@ -1,4 +1,5 @@
 # Machin-Project2
+```
 core/
     src/
         main.c
@@ -23,3 +24,4 @@ module2/
     include/
         file2_1.h
         ...
+```
