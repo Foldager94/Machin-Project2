@@ -1,0 +1,1 @@
+This is a test file called somefile.txt, it's not much, but it's an honest file.
