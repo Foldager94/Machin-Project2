@@ -1,0 +1,5 @@
+# ninja log v5
+30	65	1682067457194801905	Machin_Project2	c372d4ade8bc44af
+0	30	1682067457159965309	CMakeFiles/Machin_Project2.dir/project/core/src/main.c.o	10b261f8811d646b
+0	36	1682068877037192675	build.ninja	7122828e8738bca6
+0	33	1682068877075843067	CMakeFiles/Machin_Project2.dir/project/core/src/file_loader.c.o	5831b7b771d9811b

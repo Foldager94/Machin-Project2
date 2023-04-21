@@ -1,18 +1,14 @@
-#include <stdio.h>
+#ifndef BOARD_H
+#define BOARD_H
 
 #include "card.h"
 
-struct board
-{
-    struct card *c1;
-    struct card *c2;
-    struct card *c3;
-    struct card *c4;
-    struct card *c5;
-    struct card *c6;
-    struct card *c7;
-    struct card *f1;
-    struct card *f2;
-    struct card *f3;
-    struct card *f4;
-};
+#define NUM_COLUMNS 7
+#define NUM_FOUNDATIONS 4
+
+typedef struct board {
+    Card *columns[NUM_COLUMNS];
+    Card *foundations[NUM_FOUNDATIONS];
+}Board;
+
+#endif
