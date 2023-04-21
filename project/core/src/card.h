@@ -1,5 +1,6 @@
-struct card
-{
+#include <stdbool.h>
+
+struct card{
     bool isFlipped;
     char cardValue[2];
     char cardSuit;
