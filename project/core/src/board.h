@@ -11,4 +11,6 @@ typedef struct board {
     Card *foundations[NUM_FOUNDATIONS];
 }Board;
 
+extern void insertNext(Card* dummy, Card* new);
+
 #endif
