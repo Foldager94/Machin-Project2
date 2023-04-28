@@ -12,5 +12,6 @@ typedef struct board {
 }Board;
 
 extern void insertNext(Card* dummy, Card* new);
+extern void dealCards(Board* board, Card* cards[]);
 
 #endif

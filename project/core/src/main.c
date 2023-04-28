@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <malloc.h>
+#include <malloc/_malloc.h>
 #include "board.h"
 #include "card.h"
 
@@ -23,19 +23,25 @@ int main() {
         gameBoard.columns[i] = dummy;
     }
 
-    Card *t;
-    t = (Card*) malloc(sizeof(Card));
-    t->cardValue = '3';
-    t->cardSuit = 'H';
+    Card* cards[52];
+    for (int i = 0; i < 52; i++) {
+        Card *t;
+        t = (Card*) malloc(sizeof(Card));
+        t->cardValue = '3';
+        t->cardSuit = 'H';
 
-    Card *x;
-    x = (Card*) malloc(sizeof(Card));
-    x->cardValue = '7';
-    x->cardSuit = 'H';
-    x->isFlipped = true;
+        cards[i] = t;
+    }
 
-    insertNext(gameBoard.columns[0], t);
-    insertNext(gameBoard.columns[0], x);
+    dealCards(&gameBoard, cards);
+
+
+    //Card *t;
+    //t = (Card*) malloc(sizeof(Card));
+    //t->cardValue = '3';
+    //t->cardSuit = 'H';
+
+    //insertNext(gameBoard.columns[0], t);
 
     for (int i = 0; i < FOUNDATION_COUNT; i++) {
         Card *dummy;
@@ -47,7 +53,7 @@ int main() {
         gameBoard.foundations[i] = dummy;
     }
 
-    printBoard(gameBoard, true);
+    printBoard(gameBoard, false);
 
     return 0;
 
@@ -57,6 +63,7 @@ void printBoard(struct board gameBoard, bool showAll) {
     printf("C1\tC2\tC3\tC4\tC5\tC6\tC7\t\t\n\n");
 
     int emptyCounter = 0;
+    bool emptyColumns[7] = { false, false, false, false, false, false, false};
     int counter = 0;
     int foundationCounter = 0;
 
@@ -72,8 +79,11 @@ void printBoard(struct board gameBoard, bool showAll) {
         for (int i = 0; i < COL_COUNT; i++) {
             Card* current = cards[i];
             if (current->cardValue == ' ') {
-                printf("  ");
-                emptyCounter++;
+                printf(" ");
+                if (!emptyColumns[i]) {
+                    emptyColumns[i] = true;
+                    emptyCounter++;
+                }
             } else {
                 if (!current->isFlipped && !showAll) {
                     printf("[]");
