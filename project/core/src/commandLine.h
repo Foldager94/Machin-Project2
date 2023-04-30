@@ -1,5 +1,5 @@
-#ifndef BOARD_H
-#define BOARD_H
+#ifndef COMMANDLINE_H
+#define COMMANDLINE_H
 
 #include <stdio.h>
 
