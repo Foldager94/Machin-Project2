@@ -46,7 +46,7 @@ int main() {
     bool isRunning = true;
     bool gameStarted = false;
     bool deckLoaded = false;
-    Card* cards[52];
+    Card* deck;
 
     while (isRunning) {
         char input[101];
@@ -120,7 +120,7 @@ int main() {
                             strcpy(commandLine.message, "ERROR no deck");
                         } else {
                             gameStarted = true;
-                            deal_cards(&gameBoard, cards);
+                            deal_cards(&gameBoard, deck);
                             strcpy(commandLine.command, "P");
                             strcpy(commandLine.message, "OK");
                         }
@@ -187,36 +187,7 @@ int main() {
             }
         }
 
-
-
-    //Will be deleted in time
-
-    //Card* cards[52];
-    for (int i = 0; i < 52; i++) {
-        Card *t;
-        t = (Card*) malloc(sizeof(Card));
-        t->cardValue = '3';
-        t->cardSuit = 'H';
-
-        cards[i] = t;
-    }
-
-    deal_cards(&gameBoard, cards);
-
-
-    //Card *t;
-    //t = (Card*) malloc(sizeof(Card));
-    //t->cardValue = '3';
-    //t->cardSuit = 'H';
-
-    //insertNext(gameBoard.columns[0], t);
-
-
-
-    //printBoard(gameBoard, false);
-
     return 0;
-
 }
 
 
