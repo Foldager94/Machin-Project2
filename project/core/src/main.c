@@ -1,15 +1,13 @@
 #include <stdio.h>
-#include <malloc/_malloc.h>
+#include <stdlib.h>
 #include <strings.h>
 #include "board.h"
 #include "card.h"
 #include "commandLine.h"
 
-#define MIN_LINE_PRINT 8
 #define COL_COUNT 7
 #define FOUNDATION_COUNT 4
 
-void printBoard(Board*, bool showAll);
 void printCommandLine(CommandLine*);
 
 int main() {
@@ -19,31 +17,30 @@ int main() {
 
     //Initialize dummy elements
     for (int i = 0; i < COL_COUNT; i++) {
-        Card *dummy;
-        dummy = (Card*)malloc(sizeof(Card));
-
-        dummy->cardValue = ' ';
-        dummy->previous = dummy;
-        dummy->next = dummy;
-        gameBoard.columns[i] = dummy;
+        gameBoard.columns[i] = init_list();
     }
 
     for (int i = 0; i < FOUNDATION_COUNT; i++) {
-        Card *dummy;
-        dummy = (Card*)malloc(sizeof(Card));
-
-        dummy->cardValue = ' ';
-        dummy->previous = dummy;
-        dummy->next = dummy;
-        gameBoard.foundations[i] = dummy;
+        gameBoard.foundations[i] = init_list();
     }
+
+    Card* test = init_list();
+    for (int i = 0; i < 3; i++) {
+        Card *t;
+        t = (Card*) malloc(sizeof(Card));
+        t->cardValue = '3';
+        t->cardSuit = 'H';
+
+        insert_next(test, t);
+    }
+    clear_list(test);
 
     //Initialize commands
     commandLine.command[0] = ' ';
     commandLine.message[0] = ' ';
 
 
-    printBoard(&gameBoard, false);
+    print_board(&gameBoard, false);
     printCommandLine(&commandLine);
 
     bool isRunning = true;
@@ -95,7 +92,7 @@ int main() {
                     }
                 }
                 printCommandLine(&commandLine);
-                printBoard(&gameBoard, commandSuccessfull);
+                print_board(&gameBoard, commandSuccessfull);
 
             } else if (input[0] == 'S' && input[1] == 'I') { //SI command
                 if (input[2] == '\n') {
@@ -123,7 +120,7 @@ int main() {
                             strcpy(commandLine.message, "ERROR no deck");
                         } else {
                             gameStarted = true;
-                            dealCards(&gameBoard, cards);
+                            deal_cards(&gameBoard, cards);
                             strcpy(commandLine.command, "P");
                             strcpy(commandLine.message, "OK");
                         }
@@ -133,7 +130,7 @@ int main() {
                     strcpy(commandLine.message, "Incorect command");
                 }
 
-                printBoard(&gameBoard, false);
+                print_board(&gameBoard, false);
                 printCommandLine(&commandLine);
 
             } else if (input[0] == 'Q') {
@@ -151,7 +148,7 @@ int main() {
                     strcpy(commandLine.message, "Incorect command");
                 }
 
-                printBoard(&gameBoard, false);
+                print_board(&gameBoard, false);
                 printCommandLine(&commandLine);
 
             } else if (input[0] == 'C' ) { //Move command
@@ -179,13 +176,13 @@ int main() {
                     strcpy(commandLine.message, "Incorect command");
                 }
 
-                printBoard(&gameBoard, false);
+                print_board(&gameBoard, false);
                 printCommandLine(&commandLine);
 
             } else { //unknown command
                 strcpy(commandLine.command, " ");
                 strcpy(commandLine.message, "Incorect command");
-                printBoard(&gameBoard, false);
+                print_board(&gameBoard, false);
                 printCommandLine(&commandLine);
             }
         }
@@ -204,7 +201,7 @@ int main() {
         cards[i] = t;
     }
 
-    dealCards(&gameBoard, cards);
+    deal_cards(&gameBoard, cards);
 
 
     //Card *t;
@@ -228,59 +225,7 @@ int main() {
 
 
 
-//Print the board with the current cards
-void printBoard(Board* gameBoard, bool showAll) {
-    printf("C1\tC2\tC3\tC4\tC5\tC6\tC7\t\t\n\n");
 
-    int emptyCounter = 0;
-    bool emptyColumns[7] = { false, false, false, false, false, false, false};
-    int counter = 0;
-    int foundationCounter = 0;
-
-    // Pointers to each column card
-    Card* cards[COL_COUNT];
-    for (int i = 0; i < COL_COUNT; i++) {
-        cards[i] = gameBoard->columns[i]->next;
-    }
-
-    while (counter < MIN_LINE_PRINT || emptyCounter < COL_COUNT) {
-
-        // Print from each column
-        for (int i = 0; i < COL_COUNT; i++) {
-            Card* current = cards[i];
-            if (current->cardValue == ' ') {
-                printf(" ");
-                if (!emptyColumns[i]) {
-                    emptyColumns[i] = true;
-                    emptyCounter++;
-                }
-            } else {
-                if (!current->isFlipped && !showAll) {
-                    printf("[]");
-                } else {
-                    printf("%c%c", current->cardValue, current->cardSuit);
-                }
-                cards[i] = current->next;
-            }
-            printf("\t");
-        }
-
-        // Print the foundations on the right side
-        if ((counter & 1) && (counter < (FOUNDATION_COUNT * 2))) {
-            Card* fCard = gameBoard->foundations[foundationCounter]->previous;
-            if (fCard->cardValue != ' ') {
-                printf("\t%c%c\tF%i", fCard->cardValue, fCard->cardSuit, foundationCounter + 1);
-            } else {
-                printf("\t[]\tF%i", foundationCounter + 1);
-            }
-
-            foundationCounter++;
-        }
-
-        printf("\n");
-        counter++;
-    }
-}
 
 //Print the commandline
 void printCommandLine (CommandLine* commandLine) {

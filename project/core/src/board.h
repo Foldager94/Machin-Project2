@@ -11,7 +11,10 @@ typedef struct board {
     Card *foundations[NUM_FOUNDATIONS];
 }Board;
 
-extern void insertNext(Card* dummy, Card* new);
-extern void dealCards(Board* board, Card* cards[]);
+extern void insert_next(Card* dummy, Card* new);
+extern Card* init_list();
+extern void clear_list(Card* dummy);
+extern void deal_cards(Board* board, Card* cards[]);
+extern void print_board(Board* board, bool showAll);
 
 #endif

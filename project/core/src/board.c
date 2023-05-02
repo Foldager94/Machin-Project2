@@ -1,54 +1,128 @@
-#include <stddef.h>
-#include "card.h";
+#include <stdio.h>
+#include <stdlib.h>
+#include "card.h"
 #include "board.h"
 
-void insertNext(Card* dummy, Card* new) {
-    if (dummy->previous->cardValue == ' ') {
-        dummy->next = new;
-        dummy->previous = new;
-        new->next = dummy;
-        new->previous = dummy;
-    } else {
-        Card* prevPtr = dummy->previous;
+#define MIN_LINE_PRINT 8
+#define COL_COUNT 7
+#define FOUNDATION_COUNT 4
 
-        prevPtr->next = new;
-        new->next = dummy;
-        new->previous = prevPtr;
-        dummy->previous = new;
-    }
+void insert_next(Card* dummy, Card* new) {
+    Card *prevPtr = dummy->previous;
+    prevPtr->next = new;
+    new->next = dummy;
+    new->previous = prevPtr;
+    dummy->previous = new;
 }
 
-void dealCards(Board* board, Card* cards[]) {
+Card* init_list() {
+    Card *dummy = (Card*)malloc(sizeof(Card));
+    dummy->isFlipped = false;
+    dummy->cardSuit = ' ';
+    dummy->cardValue = ' ';
+    dummy->previous = dummy;
+    dummy->next = dummy;
+    return dummy;
+}
+
+// Clear all elements in the linked list
+void clear_list(Card* dummy) {
+    Card* previousPtr = dummy->previous;
+    while (previousPtr->cardValue != ' ') {
+        Card* prevPreviousPtr = previousPtr->previous;
+        free(previousPtr);
+        previousPtr = prevPreviousPtr;
+    }
+
+    dummy->previous = dummy;
+    dummy->next = dummy;
+}
+
+void deal_cards(Board* board, Card* cards[]) {
+    // First card in the first column
     cards[0]->isFlipped = true;
-    insertNext(board->columns[0], cards[0]);
+    insert_next(board->columns[0], cards[0]);
 
     int count = 1;
-
     for (int i = 1; i < 7; i++ ) {
         for (int j = 1; j < i; j++) {
-            // Åbne kort
+            // Deal the open cards
             cards[count]->isFlipped = true;
-            insertNext(board->columns[j], cards[count]);
+            insert_next(board->columns[j], cards[count]);
             count++;
         }
 
         for (int k = i; k < 7; k++) {
-            // Lukkede kort
-            insertNext(board->columns[k], cards[count]);
+            // Deal the closed cards
+            insert_next(board->columns[k], cards[count]);
             count++;
         }
     }
 
     for (int i = 2; i < 6; i++ ) {
-
         for (int j = i; j < 7; j++) {
-            // Resterende åbne kort
+            // Deal remaining open cards in diagonal
             cards[count]->isFlipped = true;
-            insertNext(board->columns[j], cards[count]);
+            insert_next(board->columns[j], cards[count]);
             count++;
         }
     }
 
+    // Last open card in the last column
     cards[count]->isFlipped = true;
-    insertNext(board->columns[6], cards[count]);
+    insert_next(board->columns[6], cards[count]);
+}
+
+//Print the board with the current cards
+void print_board(Board* board, bool showAll) {
+    printf("C1\tC2\tC3\tC4\tC5\tC6\tC7\t\t\n\n");
+
+    int emptyCounter = 0;
+    bool emptyColumns[7] = { false, false, false, false, false, false, false};
+    int counter = 0;
+    int foundationCounter = 0;
+
+    // Pointers to each column card
+    Card* cards[COL_COUNT];
+    for (int i = 0; i < COL_COUNT; i++) {
+        cards[i] = board->columns[i]->next;
+    }
+
+    while (counter < MIN_LINE_PRINT || emptyCounter < COL_COUNT) {
+
+        // Print from each column
+        for (int i = 0; i < COL_COUNT; i++) {
+            Card* current = cards[i];
+            if (current->cardValue == ' ') {
+                printf(" ");
+                if (!emptyColumns[i]) {
+                    emptyColumns[i] = true;
+                    emptyCounter++;
+                }
+            } else {
+                if (!current->isFlipped && !showAll) {
+                    printf("[]");
+                } else {
+                    printf("%c%c", current->cardValue, current->cardSuit);
+                }
+                cards[i] = current->next;
+            }
+            printf("\t");
+        }
+
+        // Print the foundations on the right side
+        if (((counter & 1) == 0) && (counter < (FOUNDATION_COUNT * 2))) {
+            Card* fCard = board->foundations[foundationCounter]->previous;
+            if (fCard->cardValue != ' ') {
+                printf("\t%c%c\tF%i", fCard->cardValue, fCard->cardSuit, foundationCounter + 1);
+            } else {
+                printf("\t[]\tF%i", foundationCounter + 1);
+            }
+
+            foundationCounter++;
+        }
+
+        printf("\n");
+        counter++;
+    }
 }
