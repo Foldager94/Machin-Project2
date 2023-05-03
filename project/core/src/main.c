@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <strings.h>
 #include "board.h"
 #include "card.h"
@@ -27,7 +26,7 @@ int main() {
     //Initialize commands
     commandLine.command[0] = ' ';
     commandLine.message[0] = ' ';
-    
+
     print_board(&gameBoard, false);
     printCommandLine(&commandLine);
 
