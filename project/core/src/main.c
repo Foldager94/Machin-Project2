@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "board.h"
+#include "card.h"
 
 #define MIN_LINE_PRINT 8
 #define COL_COUNT 7
@@ -20,6 +22,25 @@ int main() {
     return 0;
 
 }
+
+Card** createDeck(char charCardArray[3]){
+    int arraySize = sizeof(charCardArray)/sizeof(charCardArray[0]);
+    for(int i =0; i < arraySize; i++){
+
+    };
+}
+
+Card* createCard(char cardSuit, char cardValue){
+    Card* newCard = malloc(sizeof(Card));
+    newCard->isFlipped = false;
+    newCard->cardValue = cardValue;
+    newCard->cardSuit = cardSuit;
+    newCard->previous = NULL;
+    newCard->next = NULL;
+    return newCard;
+}
+
+
 
 void printBoard(struct board gameBoard) {
     printf("C1\tC2\tC3\tC4\tC5\tC6\tC7\t\t\n\n");
