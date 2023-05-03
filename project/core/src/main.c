@@ -1,83 +1,200 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <strings.h>
 #include "board.h"
 #include "card.h"
+#include "commandLine.h"
 
-#define MIN_LINE_PRINT 8
 #define COL_COUNT 7
 #define FOUNDATION_COUNT 4
 
-void printBoard(struct board);
+void printCommandLine(CommandLine*);
 
 int main() {
 
-    struct board gameBoard;
-    struct card c;
-    c.cardSuit = 'H';
-    c.cardValue = '3';
-    c.isFlipped = false;
-    gameBoard.columns[0] = c;
+    Board gameBoard;
+    CommandLine commandLine;
 
-    printBoard(gameBoard);
-    return 0;
-
-}
-
-Card** createDeck(char charCardArray[3]){
-    int arraySize = sizeof(charCardArray)/sizeof(charCardArray[0]);
-    for(int i =0; i < arraySize; i++){
-
-    };
-}
-
-Card* createCard(char cardSuit, char cardValue){
-    Card* newCard = malloc(sizeof(Card));
-    newCard->isFlipped = false;
-    newCard->cardValue = cardValue;
-    newCard->cardSuit = cardSuit;
-    newCard->previous = NULL;
-    newCard->next = NULL;
-    return newCard;
-}
-
-
-
-void printBoard(struct board gameBoard) {
-    printf("C1\tC2\tC3\tC4\tC5\tC6\tC7\t\t\n\n");
-
-    int emptyCounter = 0;
-    int counter = 0;
-
-    struct card* cards[COL_COUNT];
+    //Initialize dummy elements
     for (int i = 0; i < COL_COUNT; i++) {
-        cards[i] = &gameBoard.columns[i];
+        gameBoard.columns[i] = init_list();
     }
 
-    while (counter < MIN_LINE_PRINT && emptyCounter < COL_COUNT) {
+    for (int i = 0; i < FOUNDATION_COUNT; i++) {
+        gameBoard.foundations[i] = init_list();
+    }
 
-        for (int i = 0; i < COL_COUNT; i++) {
-            struct card* current = cards[i];
-            if (current->cardValue == "") {
-                printf("  ");
-                emptyCounter++;
-            } else {
-                if (gameBoard.columns[i].isFlipped) {
-                    printf("[]");
+    //Initialize commands
+    commandLine.command[0] = ' ';
+    commandLine.message[0] = ' ';
+    
+    print_board(&gameBoard, false);
+    printCommandLine(&commandLine);
+
+    bool isRunning = true;
+    bool gameStarted = false;
+    bool deckLoaded = false;
+    Card* deck;
+
+    while (isRunning) {
+        char input[101];
+        fgets(input,sizeof(input),stdin);
+
+            if (input[0] == 'L' && input[1] == 'D') { //LD command
+                if (gameStarted) {
+                    strcpy(commandLine.command, "LD");
+                    strcpy(commandLine.message, "Command not available in the PLAY phase");
+
                 } else {
-                    printf("%c%c", current->cardValue, current->cardSuit);
+                    if (input[2] == '\n') {
+                        //No file specified
+                    } else {
+                        //file specified
+                    }
+                    deckLoaded = true;
+
                 }
+
+                //Print stuff
+
+            } else if (input[0] == 'S' && input[1] == 'W') { //SW command
+                bool commandSuccessfull = false;
+
+                if (gameStarted) {
+                    strcpy(commandLine.command, "SW");
+                    strcpy(commandLine.message, "Command not available in the PLAY phase");
+                } else {
+                    if (input[2] == '\n') {
+                        if (deckLoaded == false) {
+                            strcpy(commandLine.command, "SW");
+                            strcpy(commandLine.message, "ERROR no deck");
+
+                        } else {
+                            strcpy(commandLine.command, "SW");
+                            strcpy(commandLine.message, "ok");
+                            commandSuccessfull = true;
+                        }
+                    } else {
+                        strcpy(commandLine.command, " ");
+                        strcpy(commandLine.message, "Incorect command");
+                    }
+                }
+                printCommandLine(&commandLine);
+                print_board(&gameBoard, commandSuccessfull);
+
+            } else if (input[0] == 'S' && input[1] == 'I') { //SI command
+                if (input[2] == '\n') {
+                    //No split specified
+                } else {
+                    //split specified
+                }
+
+            } else if (input[0] == 'S' && input[1] == 'R') { //SR command
+
+
+            } else if (input[0] == 'S' && input[1] == 'D') { //SD command
+
+            } else if (input[0] == 'Q' && input[1] == 'Q') { //QQ command
+                isRunning = false;
+
+            } else if (input[0] == 'P') { //P command
+                if (input[1] == '\n') {
+                    if (gameStarted) {
+                        strcpy(commandLine.command, "SW");
+                        strcpy(commandLine.message, "Command not available in the PLAY phase");
+                    } else {
+                        if (!deckLoaded) {
+                            strcpy(commandLine.command, "P");
+                            strcpy(commandLine.message, "ERROR no deck");
+                        } else {
+                            gameStarted = true;
+                            deal_cards(&gameBoard, deck);
+                            strcpy(commandLine.command, "P");
+                            strcpy(commandLine.message, "OK");
+                        }
+                    }
+                } else {
+                    strcpy(commandLine.command, " ");
+                    strcpy(commandLine.message, "Incorect command");
+                }
+
+                print_board(&gameBoard, false);
+                printCommandLine(&commandLine);
+
+            } else if (input[0] == 'Q') {
+                if (input[1] == '\n') {
+                    if (gameStarted) {
+                        gameStarted = false;
+
+                        //reload the deck
+                    } else {
+                        strcpy(commandLine.command, "Q");
+                        strcpy(commandLine.message, "Command not available in the STARTUP phase");
+                    }
+                } else {
+                    strcpy(commandLine.command, " ");
+                    strcpy(commandLine.message, "Incorect command");
+                }
+
+                print_board(&gameBoard, false);
+                printCommandLine(&commandLine);
+
+            } else if (input[0] == 'C' ) { //Move command
+
+
+
+
+            } else if (input[0] == 'F') { //Move from faundation
+                if (input[1] == '1' || input[1] == '2' || input[1] == '3' || input[1] == '4') { //The FROM is recognized
+                    if (input[2] == '-' && input[3] == '>') { //Midle is recognized
+                        if (input[4] == 'C' && input[5] == '1' || input[5] == '2' || input[5] == '3' || input[5] == '4' || input[5] == '5' || input[5] == '6' || input[5] == '7') { //To is recognized
+                            //Validate the move
+                            //if valid move the card
+                            //Set message and command
+                        } else {
+                            strcpy(commandLine.command, " ");
+                            strcpy(commandLine.message, "Incorect command");
+                        }
+                    } else {
+                        strcpy(commandLine.command, " ");
+                        strcpy(commandLine.message, "Incorect command");
+                    }
+                } else {
+                    strcpy(commandLine.command, " ");
+                    strcpy(commandLine.message, "Incorect command");
+                }
+
+                print_board(&gameBoard, false);
+                printCommandLine(&commandLine);
+
+            } else { //unknown command
+                strcpy(commandLine.command, " ");
+                strcpy(commandLine.message, "Incorect command");
+                print_board(&gameBoard, false);
+                printCommandLine(&commandLine);
             }
-            printf("\t\n");
         }
 
-        for (int i = 0; i < COL_COUNT; i++) {
-            if (cards[i]->cardValue != "") {
-                cards[i] = cards[i]->previous;
-            }
-        }
+    return 0;
+}
 
-        counter++;
+
+
+
+
+
+
+
+
+//Print the commandline
+void printCommandLine (CommandLine* commandLine) {
+    if (commandLine->command[0] == ' ' && commandLine->message[0] == ' ' ) {
+        printf("LAST Command: \n");
+        printf("Message: \n");
+        printf("INPUT > ");
+    } else {
+        printf("LAST Command: %s \n", commandLine->command);
+        printf("Message: %s \n", commandLine->message);
+        printf("INPUT > ");
     }
-
-    printf("\nLAST Command:\nMessage:\nINPUT >");
 }
