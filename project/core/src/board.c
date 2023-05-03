@@ -15,6 +15,15 @@ void insert_next_in_list(Card* dummy, Card* new) {
     dummy->previous = new;
 }
 
+// Insert linked list of cards into the bottom of exists linked list (game logic)
+void insert_list_in_list(Card* dummy, Card* first, Card* last) {
+    Card *prevPtr = dummy->previous;
+    prevPtr->next = first;
+    last->next = dummy;
+    first->previous = prevPtr;
+    dummy->previous = last;
+}
+
 Card* init_list() {
     Card *dummy = (Card*)malloc(sizeof(Card));
     dummy->isFlipped = false;
@@ -26,6 +35,7 @@ Card* init_list() {
 }
 
 // Clear all elements in the linked list
+// This will also free the memory allocated
 void clear_list(Card* dummy) {
     Card* previousPtr = dummy->previous;
     while (previousPtr->cardValue != ' ') {
@@ -102,7 +112,7 @@ void print_board(Board* board, bool showAll) {
     printf("C1\tC2\tC3\tC4\tC5\tC6\tC7\t\t\n\n");
 
     int emptyCounter = 0;
-    bool emptyColumns[7] = { false, false, false, false, false, false, false};
+    bool emptyColumns[COL_COUNT] = { false, false, false, false, false, false, false};
     int counter = 0;
     int foundationCounter = 0;
 
