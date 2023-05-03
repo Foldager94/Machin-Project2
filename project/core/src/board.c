@@ -7,7 +7,7 @@
 #define COL_COUNT 7
 #define FOUNDATION_COUNT 4
 
-void insert_next(Card* dummy, Card* new) {
+void insert_next_in_list(Card* dummy, Card* new) {
     Card *prevPtr = dummy->previous;
     prevPtr->next = new;
     new->next = dummy;
@@ -38,23 +38,47 @@ void clear_list(Card* dummy) {
     dummy->next = dummy;
 }
 
+// Pop the last card pushed into the linked list (use for game logic)
+// This function does not free any memory, but removes the links in the linked list and returns the pointer to the card
+Card* pop_last_in_list(Card* dummy) {
+    Card* popped = dummy->previous;
+
+    // Check if the list is empty
+    if (popped == dummy) {
+        return dummy;
+    }
+
+    // Check if popped card is last in linked list (except dummy)
+    if (popped->previous == dummy) {
+        dummy->previous = dummy;
+        dummy->next = dummy;
+        return popped;
+    }
+
+    Card* new_last = popped->previous;
+    new_last->next = dummy;
+    dummy->previous = new_last;
+
+    return popped;
+}
+
 void deal_cards(Board* board, Card* deck) {
     // First card goes in the first column
     deck->isFlipped = true;
-    insert_next(board->columns[0], deck);
+    insert_next_in_list(board->columns[0], deck);
 
     Card* nextCard = deck->next;
     for (int i = 1; i < 7; i++ ) {
         for (int j = 1; j < i; j++) {
             // Deal the open cards
             nextCard->isFlipped = true;
-            insert_next(board->columns[j], nextCard);
+            insert_next_in_list(board->columns[j], nextCard);
             nextCard = nextCard->next;
         }
 
         for (int k = i; k < 7; k++) {
             // Deal the closed cards
-            insert_next(board->columns[k], nextCard);
+            insert_next_in_list(board->columns[k], nextCard);
             nextCard = nextCard->next;
         }
     }
@@ -63,14 +87,14 @@ void deal_cards(Board* board, Card* deck) {
         for (int j = i; j < 7; j++) {
             // Deal remaining open cards in diagonal
             nextCard->isFlipped = true;
-            insert_next(board->columns[j], nextCard);
+            insert_next_in_list(board->columns[j], nextCard);
             nextCard = nextCard->next;
         }
     }
 
     // Last open card in the last column
     nextCard->isFlipped = true;
-    insert_next(board->columns[6], nextCard);
+    insert_next_in_list(board->columns[6], nextCard);
 }
 
 //Print the board with the current cards

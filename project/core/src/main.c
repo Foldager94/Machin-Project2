@@ -24,22 +24,10 @@ int main() {
         gameBoard.foundations[i] = init_list();
     }
 
-    Card* test = init_list();
-    for (int i = 0; i < 3; i++) {
-        Card *t;
-        t = (Card*) malloc(sizeof(Card));
-        t->cardValue = '3';
-        t->cardSuit = 'H';
-
-        insert_next(test, t);
-    }
-    clear_list(test);
-
     //Initialize commands
     commandLine.command[0] = ' ';
     commandLine.message[0] = ' ';
-
-
+    
     print_board(&gameBoard, false);
     printCommandLine(&commandLine);
 
