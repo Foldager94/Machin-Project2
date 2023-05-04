@@ -1,76 +1,10 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include "card.h"
 #include "board.h"
 
 #define MIN_LINE_PRINT 8
 #define COL_COUNT 7
 #define FOUNDATION_COUNT 4
-
-void insert_next_in_list(Card* dummy, Card* new) {
-    Card *prevPtr = dummy->previous;
-    prevPtr->next = new;
-    new->next = dummy;
-    new->previous = prevPtr;
-    dummy->previous = new;
-}
-
-// Insert linked list of cards into the bottom of exists linked list (game logic)
-void insert_list_in_list(Card* dummy, Card* first, Card* last) {
-    Card *prevPtr = dummy->previous;
-    prevPtr->next = first;
-    last->next = dummy;
-    first->previous = prevPtr;
-    dummy->previous = last;
-}
-
-Card* init_list() {
-    Card *dummy = (Card*)malloc(sizeof(Card));
-    dummy->isFlipped = false;
-    dummy->cardSuit = ' ';
-    dummy->cardValue = ' ';
-    dummy->previous = dummy;
-    dummy->next = dummy;
-    return dummy;
-}
-
-// Clear all elements in the linked list
-// This will also free the memory allocated
-void clear_list(Card* dummy) {
-    Card* previousPtr = dummy->previous;
-    while (previousPtr->cardValue != ' ') {
-        Card* prevPreviousPtr = previousPtr->previous;
-        free(previousPtr);
-        previousPtr = prevPreviousPtr;
-    }
-
-    dummy->previous = dummy;
-    dummy->next = dummy;
-}
-
-// Pop the last card pushed into the linked list (use for game logic)
-// This function does not free any memory, but removes the links in the linked list and returns the pointer to the card
-Card* pop_last_in_list(Card* dummy) {
-    Card* popped = dummy->previous;
-
-    // Check if the list is empty
-    if (popped == dummy) {
-        return dummy;
-    }
-
-    // Check if popped card is last in linked list (except dummy)
-    if (popped->previous == dummy) {
-        dummy->previous = dummy;
-        dummy->next = dummy;
-        return popped;
-    }
-
-    Card* new_last = popped->previous;
-    new_last->next = dummy;
-    dummy->previous = new_last;
-
-    return popped;
-}
 
 void deal_cards(Board* board, Card* deck) {
     // First card goes in the first column
