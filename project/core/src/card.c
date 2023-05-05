@@ -1,5 +1,5 @@
 #include <stdlib.h>
-
+#include <time.h>
 #include "card.h"
 
 // ASCII decimal values from card values
@@ -87,7 +87,7 @@ void remove_list_in_list(Card* dummy, Card* target) {
     }
 
     // Ensure that target was actually found, otherwise do nothing
-    if (new_last != dummy) {
+    if (new_last->cardValue != ' ') {
         new_last = new_last->previous;
         new_last->next = dummy;
         dummy->previous = new_last;
@@ -113,7 +113,7 @@ Card* init_list() {
 // This will also free the memory allocated
 void clear_list(Card* dummy) {
     Card* previousPtr = dummy->previous;
-    while (previousPtr != dummy) {
+    while (previousPtr->cardValue != ' ') {
         Card* prevPreviousPtr = previousPtr->previous;
         free(previousPtr);
         previousPtr = prevPreviousPtr;
@@ -145,4 +145,19 @@ Card* pop_last_in_list(Card* dummy) {
     dummy->previous = new_last;
 
     return popped;
+}
+
+// Creates a copy of a given card linked list in source to destination (destination should be after init_list)
+void make_copy(Card* source, Card* destination) {
+    Card* current = source->next;
+    while (current->cardValue != ' ') {
+        Card* copy = (Card*) malloc(sizeof(Card));
+        copy->cardValue = current->cardValue;
+        copy->cardSuit = current->cardSuit;
+        copy->isFlipped = current->isFlipped;
+        copy->previous = NULL;
+        copy->next = NULL;
+        insert_next_in_list(destination, copy);
+        current = current->next;
+    }
 }

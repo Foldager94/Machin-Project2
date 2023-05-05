@@ -3,13 +3,14 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
 #define NUM_CARDS 52
 #define defaultPath "../project/core/src/unshuffled_deck.txt"
-#define stringSize 208
+#define stringSize 156
 
 
 char* loadFile(char filePath[]){
-    char tmpStringDeck[stringSize];
+    setlocale(LC_ALL, "UTF-8");
     FILE *fp;
     if(filePath == NULL){
         fp = fopen(defaultPath, "r");
@@ -22,11 +23,20 @@ char* loadFile(char filePath[]){
         printf("Error opening the file\n");
         return NULL;
     };
-    
-    fgets(tmpStringDeck, sizeof(tmpStringDeck), fp);
-    char* stringDeck = (char*) malloc(sizeof(tmpStringDeck));
-    strcpy(stringDeck, tmpStringDeck);
+
+    fseek(fp, 0, SEEK_END);
+    int file_size = ftell(fp);
+    rewind(fp);
+    char* stringDeck = (char*) malloc(stringSize+1);
+    fread(stringDeck, sizeof(char), file_size, fp);
     fclose(fp);
+
+    for (int i = 0; i < file_size; i++) {
+        if (stringDeck[i] == '\n') {
+            stringDeck[i] = ' ';
+        }
+    }
+
     return stringDeck;
 };
 
@@ -44,12 +54,11 @@ Card *createDeck(char* stringDeck) {
 
     // Find length of the stringDeck
     // It divids by 4 since each card in a file is representet by 3 chars and 1 whitespace
-    // Adds 1 to the count to compensate for the last cards missing whitespace
-    int numCards = strlen(stringDeck) / 4 +1;
+    int numCards = strlen(stringDeck) / 3;
 
     // Checks if the file contains 52 cards, returns null and print error if it is more or less then
     if(numCards != NUM_CARDS_ONE_DECK){
-        printf("Fejl i dækket: Dette er ikke et komplet sæt kort af 52\n");
+        printf("Error in deck: This is not a complete set of 52 cards.\n");
         return NULL;
     }
 
@@ -57,9 +66,11 @@ Card *createDeck(char* stringDeck) {
     // Creats each card in the order that is given in the file
     for (int i = 0; i < numCards; i++){
         currentCard = init_list();
-        currentCard->cardSuit = stringDeck[i*4];
-        currentCard->cardValue = stringDeck[i*4+2];
+        currentCard->cardValue = stringDeck[i*3];
+        currentCard->cardSuit = stringDeck[i*3+1];
+        currentCard->isFlipped = false;
         currentCard->previous = previousCard;
+        currentCard->next = NULL;
 
         previousCard->next = currentCard;
         previousCard = currentCard;
@@ -76,7 +87,7 @@ void printDeck(Card *deck) {
     Card *currentCard = deck->next;
     printf("Deck:\n");
     while (true) {
-        printf("%c%c ", currentCard->cardSuit, currentCard->cardValue);
+        printf("%c%c ", currentCard->cardValue, currentCard->cardSuit);
         currentCard = currentCard->next;
         if(currentCard->cardSuit == ' '){
             break;
@@ -206,3 +217,69 @@ int shuffleDeckRandom(Card* deck){
     };
     return 0;
 };
+
+char* deckToString(Card *deck, bool sperateWithNewLine){
+    int deckSize = deckLength(deck);
+    int stringLength = deckSize*3;
+    char *resultString = malloc(stringLength);
+    Card *currentCard = deck ->next;
+    char tmpString[4];
+    for(int i = 0; i < deckSize; i++){
+        if(currentCard->cardSuit==' '){
+            break;
+        }
+        if(sperateWithNewLine) {
+            sprintf(tmpString, "%c%c%c", currentCard->cardValue, currentCard->cardSuit, '\n');
+        }else{
+            sprintf(tmpString, "%c%c%c", currentCard->cardValue, currentCard->cardSuit, ' ');
+        }
+        if(i == 0){
+            strcpy(resultString,tmpString);
+        }else{
+
+            strcat(resultString,tmpString);
+        }
+        currentCard = currentCard->next;
+    };
+    return resultString;
+}
+
+int saveDeckToFile(Card *deck, char* fileName){
+    int deckSize = deckLength(deck);
+    int stringLength = deckSize*3;
+    char *resultString = malloc(stringLength);
+    Card *currentCard = deck ->next;
+    char tmpString[4];
+    for(int i = 0; i < deckSize; i++){
+        if(currentCard->cardSuit==' '){
+        }
+        sprintf(tmpString, "%c%c%c", currentCard->cardValue, currentCard->cardSuit, '\n');
+        if(i == 0){
+            strcpy(resultString,tmpString);
+        }else{
+
+            strcat(resultString,tmpString);
+        }
+        currentCard = currentCard->next;
+    };
+
+    FILE *fp;
+    fp = fopen(fileName, "w");
+    if (fp == NULL) {
+        printf("saveDeckToFile: Error opening the file\n");
+        return 1;
+    };
+    fprintf(fp, "%s", resultString);
+    free(resultString);
+    return 0;
+}
+
+void freeDeck(Card *deck) {
+    Card *currentCard = deck->next;
+    while (currentCard != deck) {
+        Card *temp = currentCard;
+        currentCard = currentCard->next;
+        free(temp);
+    }
+    free(deck);
+}
