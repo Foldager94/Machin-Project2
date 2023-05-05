@@ -6,6 +6,8 @@
 #include "card.h"
 #include "commandLine.h"
 #include "deck.h"
+#include <time.h>
+#include <stdbool.h>
 
 #define COL_COUNT 7
 #define FOUNDATION_COUNT 4
@@ -181,15 +183,6 @@ void printCommandLine(CommandLine*);
 // }
 
 
-int main() { 
-    char stringDeckArray[] = "C:1 C:2 C:3 C:4 C:5 C:6 C:7 C:8 C:9 C:T C:J C:Q C:K D:1 D:2 D:3 D:4 D:5 D:6 D:7 D:8 D:9 D:T D:J D:Q D:K H:1 H:2 H:3 H:4 H:5 H:6 H:7 H:8 H:9 H:T H:J H:Q H:K S:1 S:2 S:3 S:4 S:5 S:6 S:7 S:8 S:9 S:T S:J S:Q S:K";
-    Card *deck = createDeck(stringDeckArray);
-    printDeck(deck);
-
-    return 0;
-};
-
-
 
 //Print the commandline
 void printCommandLine (CommandLine* commandLine) {
@@ -203,3 +196,323 @@ void printCommandLine (CommandLine* commandLine) {
         printf("INPUT > ");
     }
 }
+
+//
+// fileLoader.c
+//
+
+#define defaultPath "../decks/unshuffled_deck.txt"
+// 208 = 52*4
+#define stringSize 208
+
+char* loadFile(char filePath[]){
+    char tmpStringDeck[stringSize];
+    FILE *fp;
+    if(filePath == NULL){
+        fp = fopen(defaultPath, "r");
+    }else{
+        fp = fopen(filePath, "r");
+    }
+   
+    //checks if the file is open correctly
+    if (fp == NULL) { 
+        printf("Fejl ved åbning af filen\n");
+        return NULL;
+    };
+    
+    fgets(tmpStringDeck, sizeof(tmpStringDeck), fp);
+    char* stringDeck = (char*) malloc(sizeof(tmpStringDeck));
+    strcpy(stringDeck, tmpStringDeck);
+    fclose(fp);
+    return stringDeck;
+}
+
+Card* initCard(){
+    Card *card = NULL;
+    card = (Card*)malloc(sizeof(Card));
+    card->isFlipped = false;
+    card->cardValue = '0';
+    card->cardSuit = '0';
+    card->previous = NULL;
+    card->next = NULL;
+
+    return card;
+}
+
+
+//
+// deck.c
+//
+#define NUM_CARDS_ONE_DECK 52
+
+Card *createDeck(char* stringDeck) {
+    Card *deck = NULL;
+    Card *currentCard = NULL;
+    Card *previousCard = NULL;
+
+    // Init dummy card
+    deck = initCard();
+
+    previousCard = deck;
+
+    // Find length of the stringDeck
+    // It divids by 4 since each card in a file is representet by 3 chars and 1 whitespace
+    // Adds 1 to the count to compensate for the last cards missing whitespace
+    int numCards = strlen(stringDeck) / 4 +1;
+
+    // Checks if the file contains 52 cards, returns null and print error if it is more or less then
+    if(numCards != NUM_CARDS_ONE_DECK){
+        printf("Fejl i dækket: Dette er ikke et komplet sæt kort af 52\n");
+        return NULL;
+    }
+
+
+    // Creats each card in the order that is given in the file
+    for (int i = 0; i < numCards; i++){
+        currentCard = initCard();
+        currentCard->cardSuit = stringDeck[i*4];
+        currentCard->cardValue = stringDeck[i*4+2];
+        currentCard->previous = previousCard;
+
+        previousCard->next = currentCard;
+        previousCard = currentCard;
+    };
+
+    // Links first card (Dummy Card) to the last card
+    currentCard->next = deck;
+    deck->previous = currentCard;
+
+    return deck;
+}
+
+
+void printDeck(Card *deck) {
+    Card *currentCard = deck->next;
+    printf("Deck:\n");
+    while (true) {
+        printf("%c%c ", currentCard->cardSuit, currentCard->cardValue);
+        currentCard = currentCard->next;
+        if(currentCard->cardSuit == '0'){
+            break;
+        };
+    }
+    printf("\n\n");
+}
+
+
+//
+// LD command
+//
+Card* LD(char filePath[]){
+    char* stringDeck = loadFile(NULL);
+    Card *deck = createDeck(stringDeck);
+    free(stringDeck);
+    return deck;
+};
+
+int stringToInt(char* str) {
+    int result = 0;
+    int sign = 1;
+    // Checks if the given string is negativ - Sets sign ti -1 if it is
+    if (*str == '-') {
+        sign = -1;
+        str++;
+    }
+    // Iterates through the String, and adds its Ascii Value to result
+    while (*str != '\0') {
+        result = result * 10 + (*str - '0');
+        str++;
+    }
+    return sign * result;
+}
+
+int randomNumber(int max){
+    // Sets a random seed for the Rand function
+    srand(time(NULL));
+    // Finds a random number between 0 and max
+    int randomInt = rand() % max;
+    //printf("RandomInt: %d\n", randomInt);
+    return randomInt;
+};
+
+int deckLength(Card* deck) {
+    int count = 0;
+    Card* current = deck;
+    while (true) {
+        count++;
+        current = current->next;
+        if(current == deck){
+            break;
+        }
+    }
+    return count-1;
+}
+
+int shuffleDeck(Card* deck, int split){
+
+    Card *pileOne = initCard();
+    Card *pileTwo = initCard();
+    Card* currentCard = deck->next;
+
+    //Divide the deck in to to piles based on split value
+    for(int i = 0; i < split; i++){
+        currentCard = currentCard->next;
+    };
+
+    pileOne->next = deck->next;
+    pileOne->previous = currentCard->previous;
+
+    pileTwo->next = currentCard;
+    pileTwo->previous = deck->previous;
+
+    pileOne->previous->next = pileOne;
+    pileTwo->previous->next = pileTwo;
+
+    // printDeck(pileOne);
+    // printDeck(pileTwo);
+
+    Card *deckTopCard = deck;
+    Card *pileOneCurrentCard = pileOne->next;
+    Card *pileTwoCurrentCard = pileTwo->next;
+    Card *pileOneNextCard;
+    Card *pileTwoNextCard;
+
+    // TODO: Comment
+    while(true){
+        if(pileOneCurrentCard->cardValue != '0' && pileTwoCurrentCard->cardValue != '0'){
+            pileOneNextCard = pileOneCurrentCard->next;
+            pileTwoNextCard = pileTwoCurrentCard->next;
+
+            deckTopCard->next = pileOneCurrentCard;
+            pileOneCurrentCard->next = pileTwoCurrentCard;
+            pileTwoCurrentCard->next = deck;
+
+            pileOneCurrentCard->previous = deckTopCard;
+            pileTwoCurrentCard->previous = pileOneCurrentCard;
+            deck->previous = pileTwoCurrentCard;
+
+            deckTopCard = pileTwoCurrentCard;
+
+            pileOneCurrentCard = pileOneNextCard;
+            pileTwoCurrentCard = pileTwoNextCard;
+        } else if(pileOneCurrentCard->cardValue != '0'){
+            pileOneNextCard = pileOneCurrentCard->next;
+
+            deckTopCard->next = pileOneCurrentCard;
+            pileOneCurrentCard->previous = deckTopCard;
+
+            pileOneCurrentCard->next = deck;
+            deck->previous = pileOneCurrentCard;
+
+            deckTopCard = pileOneCurrentCard;
+
+            pileOneCurrentCard = pileOneNextCard;
+        } else if(pileTwoCurrentCard->cardValue != '0'){
+            pileTwoNextCard = pileTwoCurrentCard->next;
+
+            deckTopCard->next = pileTwoCurrentCard;
+            pileTwoCurrentCard->previous = deckTopCard;
+
+            pileTwoCurrentCard->next = deck;
+            deck->previous = pileTwoCurrentCard;
+
+            deckTopCard = pileTwoCurrentCard;
+
+            pileTwoCurrentCard = pileTwoNextCard;
+        } else {
+            break;
+        };
+    };
+
+    return 0;
+};
+
+//
+// SL command
+//
+int SL(Card* deck, char* split){
+    int splitInt;
+    if(strcmp(split, "") == 0){
+        splitInt = randomNumber(53);
+    }else{
+        splitInt = stringToInt(split);
+        if(splitInt < 53 && 0 > splitInt){
+            printf("Fejl: Tallet er 0 eller negativ, eller større end mængden af kort i dækket");
+            return 1;
+        }
+    };
+    shuffleDeck(deck, splitInt);
+    return 0;
+}
+
+
+//
+// SR
+//
+int SR(Card* deck){
+    shuffleDeckRandom(deck);
+    return 0;
+}
+
+int shuffleDeckRandom(Card* deck){
+    int deckSize = deckLength(deck);
+    Card *unshuffledDeck = initCard();
+    unshuffledDeck->next = deck->next;
+    unshuffledDeck->previous = deck->previous;
+
+    deck->next = deck;
+    deck->previous = deck;
+
+    Card *currentCard = unshuffledDeck->next;
+    Card *nextCard;
+    Card *cardOnIndex = deck->next;
+    int cardIndexPlacement;
+
+    for (int i=1; i <=deckSize; i++){
+        cardIndexPlacement = randomNumber(i)+1;
+        for (int j=1; j<=cardIndexPlacement; j++){
+            cardOnIndex = cardOnIndex->next;
+        };
+        nextCard = currentCard->next;
+        currentCard->next = cardOnIndex->next;
+        cardOnIndex->next = currentCard;
+        currentCard->previous = cardOnIndex;
+
+        currentCard = nextCard;
+
+    };
+    return 0;
+}
+
+//
+// SD
+//
+int saveDeckToFile(Card *deck){
+    int deckSize = deckLength(deck);
+    int stringLength = deckSize*4;
+    char *resultString = malloc(stringLength);
+    Card *currentCard = deck ->next;
+    char tmpString[4];
+    for(int i = 0; i < deckSize; i++){
+        if(currentCard->cardSuit=='0'){
+        }
+        sprintf(tmpString, "%c%c%c%c", currentCard->cardSuit, ':', currentCard->cardValue, ' ');
+        if(i == 0){
+            strcpy(resultString,tmpString);
+        }else{
+
+        strcat(resultString,tmpString);
+        }
+        currentCard = currentCard->next;
+    printf("%s\n",resultString);
+    };
+}
+
+
+int main() { 
+    Card *deck = LD(NULL);
+    SL(deck, "32");
+    saveDeckToFile(deck);
+    //printDeck(deck);
+    return 0;
+};
