@@ -9,6 +9,17 @@
 
 void printCommandLine(CommandLine*);
 
+void TEST_ASCII_to_numeric() {
+
+    //ASCII_to_numeric 1
+    int expected = 1;
+    if (ASCII_to_numeric(65) == expected) {
+        printf("ASCII_to_numeric 1: PASSED");
+    } else {
+        printf("ASCII_to_numeric 1: Failed");
+    }
+}
+
 int main() {
 
     Board gameBoard;
@@ -160,7 +171,9 @@ int main() {
                                                 toMove = pop_last_in_list(fromColumn);
                                                 insert_next_in_list(destination->next, toMove);
 
-                                                char msg[] = {"C%c:%c%c->F%c", input[1],input[3],input[4],input[8]};
+
+                                                char msg[30];
+                                                sprintf(msg,"C%c:%c%c->F%c", input[1],input[3],input[4],input[8]);
                                                 strcpy(commandLine.command, msg);
                                                 strcpy(commandLine.message, "OK");
                                             }
@@ -175,7 +188,8 @@ int main() {
 
                                             //Make move
 
-                                            char msg[] = {"C%c:%c%c->C%c", input[1],input[3],input[4],input[8]};
+                                            char msg[30];
+                                            sprintf(msg,"C%c:%c%c->C%c", input[1],input[3],input[4],input[8]);
                                             strcpy(commandLine.command, msg);
                                             strcpy(commandLine.message, "OK");
 
@@ -196,7 +210,8 @@ int main() {
                                         Card* toMove = pop_last_in_list(fromColumn);
                                         insert_next_in_list(destination->next, toMove);
 
-                                        char msg[] = {"C%c->F%c", input[1],input[5]};
+                                        char msg[30];
+                                        sprintf(msg,"C%c->F%c", input[1],input[5]);
                                         strcpy(commandLine.command, msg);
                                         strcpy(commandLine.message, "OK");
                                     }
@@ -211,9 +226,10 @@ int main() {
                                         Card* toMove = pop_last_in_list(fromColumn);
                                         insert_next_in_list(destination->next, toMove);
 
-                                        char msg[] = {"C%c->C%c", input[1],input[5]};
+                                        char msg[30];
+                                        sprintf(msg,"C%c->C%c", input[1],input[5]);
                                         strcpy(commandLine.command, msg);
-                                        strcpy(commandLine.message, "OK")
+                                        strcpy(commandLine.message, "OK");
                                     }
                                 }
 
@@ -244,7 +260,8 @@ int main() {
                                     toMove = pop_last_in_list(toMove->next);
                                     insert_next_in_list(destination->next, toMove);
 
-                                    char msg[] = {"F%c->C%c", toMove->cardValue, destination->cardValue};
+                                    char msg[30];
+                                    sprintf(msg,"F%c->C%c", toMove->cardValue, destination->cardValue);
                                     strcpy(commandLine.command, msg);
                                     strcpy(commandLine.message, "OK");
                                 } else {
@@ -276,6 +293,8 @@ int main() {
             }
         }
 
+    TEST_ASCII_to_numeric();
+
     return 0;
 }
 
@@ -299,3 +318,4 @@ void printCommandLine (CommandLine* commandLine) {
         printf("INPUT > ");
     }
 }
+
