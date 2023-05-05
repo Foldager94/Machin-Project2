@@ -9,36 +9,49 @@
 void deal_cards(Board* board, Card* deck) {
     // First card goes in the first column
     deck->isFlipped = true;
-    insert_next_in_list(board->columns[0], deck);
 
-    Card* nextCard = deck->next;
+    Card* current = deck->next;
+    Card* nextCard = current->next;
+
+    current->isFlipped = true;
+    insert_next_in_list(board->columns[0], current);
+
+    current = nextCard;
+    nextCard = current->next;
+
     for (int i = 1; i < 7; i++ ) {
         for (int j = 1; j < i; j++) {
             // Deal the open cards
-            nextCard->isFlipped = true;
-            insert_next_in_list(board->columns[j], nextCard);
-            nextCard = nextCard->next;
+            current->isFlipped = true;
+            insert_next_in_list(board->columns[j], current);
+
+            current = nextCard;
+            nextCard = current->next;
         }
 
         for (int k = i; k < 7; k++) {
             // Deal the closed cards
-            insert_next_in_list(board->columns[k], nextCard);
-            nextCard = nextCard->next;
+            insert_next_in_list(board->columns[k], current);
+
+            current = nextCard;
+            nextCard = current->next;
         }
     }
 
     for (int i = 2; i < 6; i++ ) {
         for (int j = i; j < 7; j++) {
             // Deal remaining open cards in diagonal
-            nextCard->isFlipped = true;
-            insert_next_in_list(board->columns[j], nextCard);
-            nextCard = nextCard->next;
+            current->isFlipped = true;
+            insert_next_in_list(board->columns[j], current);
+
+            current = nextCard;
+            nextCard = current->next;
         }
     }
 
     // Last open card in the last column
-    nextCard->isFlipped = true;
-    insert_next_in_list(board->columns[6], nextCard);
+    current->isFlipped = true;
+    insert_next_in_list(board->columns[6], current);
 }
 
 //Print the board with the current cards
