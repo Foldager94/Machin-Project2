@@ -13,4 +13,6 @@ extern int deckLength(Card* deck);
 extern int shuffleDeck(Card* deck, int split);
 extern int shuffleDeckRandom(Card* deck);
 extern int saveDeckToFile(Card *deck, char* fileName);
+extern char* deckToString(Card *deck, bool sperateWithNewLine);
+extern void freeDeck(Card *deck);
 #endif /* DECK_H */

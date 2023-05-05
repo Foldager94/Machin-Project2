@@ -1,5 +1,5 @@
 #include <stdlib.h>
-
+#include <time.h>
 #include "card.h"
 
 // ASCII decimal values from card values
