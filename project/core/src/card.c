@@ -4,18 +4,53 @@
 
 // ASCII decimal values from card values
 const int CARD_A = 65;
-const int CARD_2 = 50;
-const int CARD_3 = 51;
-const int CARD_4 = 52;
-const int CARD_5 = 53;
-const int CARD_6 = 54;
-const int CARD_7 = 55;
-const int CARD_8 = 56;
-const int CARD_9 = 57;
 const int CARD_T = 84;
 const int CARD_J = 74;
 const int CARD_Q = 81;
 const int CARD_K = 75;
+
+//Convert ASCII to numeric values including edge cases for A,T,Q,K as 1,10,11,12,13
+int ASCII_to_numeric(int cardValue) {
+    if (cardValue == CARD_A) {
+        return 1;
+    } else if (cardValue == CARD_T) {
+        return 10;
+    } else if (cardValue == CARD_J) {
+        return 11;
+    } else if (cardValue == CARD_Q) {
+        return 12;
+    } else if (cardValue == CARD_K) {
+        return 13;
+    } else {
+        return cardValue - 48;
+    }
+}
+
+//Go through a column and search for a specific card if the card exists and is flipped it is return else dummy is returned
+Card* find_card(Card* dummy, char thisCardValue, char thisCardSuit ) {
+    Card* returnCard = dummy;
+    Card* current = dummy;
+
+    bool moreCards = true;
+    while (moreCards) {
+        current = current->previous;
+        if (current->cardValue == ' ') {
+            moreCards = false;
+            break;
+        } else if (!current->isFlipped) {
+            moreCards = false;
+            break;
+        } else {
+            if (current->cardValue == thisCardValue && current->cardSuit == thisCardSuit) {
+                returnCard == current;
+                moreCards = false;
+                break;
+            }
+        }
+    }
+    return returnCard;
+}
+
 
 void insert_next_in_list(Card* dummy, Card* new) {
     Card *prevPtr = dummy->previous;
