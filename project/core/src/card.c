@@ -146,3 +146,16 @@ Card* pop_last_in_list(Card* dummy) {
 
     return popped;
 }
+
+// Creates a copy of a given card linked list in source to destination (destination should be after init_list)
+void make_copy(Card* source, Card* destination) {
+    Card* current = source->next;
+    while (current != source) {
+        Card* copy = (Card*) malloc(sizeof(Card));
+        copy->cardValue = current->cardValue;
+        copy->cardSuit = current->cardSuit;
+        copy->isFlipped = current->isFlipped;
+        insert_next_in_list(destination, copy);
+        current = current->next;
+    }
+}
