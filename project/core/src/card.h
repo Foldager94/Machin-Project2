@@ -26,4 +26,5 @@ extern int ASCII_to_numeric(int cardValue);
 extern Card* find_card(Card* dummy, char thisCardSuit, char thisCardValue);
 extern int randomNumber(int max);
 extern void make_copy(Card* source, Card* destination);
+extern void remove_list_in_list(Card* dummy, Card* target);
 #endif

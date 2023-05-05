@@ -99,9 +99,16 @@ void moveSingleCard (Card* toMovColumn, Card* destination) {
     insert_next_in_list(destination->next, toMove);
 }
 
+void moveListOfCards (Card* first, Card* fromDummy, Card* toDummy) {
+    Card* last = fromDummy->previous;
+
+    remove_list_in_list(fromDummy, first);
+    insert_list_in_list(toDummy,first,last);
+}
+
 
 int main() {
-    runTests();
+    //runTests();
     clearScreen();
 
     char NOT_AVAILABLE[] = "Command not available in the PLAY phase";
@@ -157,6 +164,8 @@ int main() {
                         Deck = createDeck(stringDeck);
                         free(stringDeck);
 
+                        deckLoaded = true;
+
                     } else {
                         //file specified
                         char* parameter;
@@ -165,8 +174,6 @@ int main() {
                         printf("%s", parameter);
 
                     }
-                    deckLoaded = true;
-
                 }
 
 
@@ -286,7 +293,7 @@ int main() {
                                         //Validate move
                                         if (validateMoveToColumn(toMove, destination)) {
 
-                                            //Make move
+                                            moveListOfCards(toMove,fromColumn,destination->next);
 
                                             setCommandLine(&commandLine, OK, input);
                                         }
@@ -346,6 +353,7 @@ int main() {
                 }
              }
 
+            clearScreen();
             print_board(&gameBoard, showAll);
             printCommandLine(&commandLine);
          }
