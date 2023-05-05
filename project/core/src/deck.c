@@ -244,6 +244,7 @@ char* deckToString(Card *deck, bool sperateWithNewLine){
     return resultString;
 }
 
+
 int saveDeckToFile(Card *deck, char* fileName){
     int deckSize = deckLength(deck);
     int stringLength = deckSize*3;
@@ -264,7 +265,11 @@ int saveDeckToFile(Card *deck, char* fileName){
     };
 
     FILE *fp;
-    fp = fopen(fileName, "w");
+    if(fileName == NULL){
+        fp = fopen("cards.txt", "w");
+    } else{
+        fp = fopen(fileName, "w");
+    }
     if (fp == NULL) {
         printf("saveDeckToFile: Error opening the file\n");
         return 1;

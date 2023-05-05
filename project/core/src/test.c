@@ -89,6 +89,8 @@ void testASCII_to_numeric(){
 
 }
 
+
+
 void runTests(){
     testLoadFile();
     testCreateDeck();
