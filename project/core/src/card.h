@@ -24,5 +24,5 @@ extern void clear_list(Card* dummy);
 extern Card* init_list();
 extern int ASCII_to_numeric(int cardValue);
 extern Card* find_card(Card* dummy, char thisCardSuit, char thisCardValue);
-
+extern int randomNumber(int max);
 #endif

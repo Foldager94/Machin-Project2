@@ -26,6 +26,16 @@ int ASCII_to_numeric(int cardValue) {
     }
 }
 
+// Generates random number, based on current time seed
+int randomNumber(int max){
+    // Sets a random seed for the Rand function
+    srand(time(NULL));
+    // Finds a random number between 0 and max
+    int randomInt = rand() % max;
+    //printf("RandomInt: %d\n", randomInt);
+    return randomInt;
+};
+
 //Go through a column and search for a specific card if the card exists and is flipped it is return else dummy is returned
 Card* find_card(Card* dummy, char thisCardValue, char thisCardSuit ) {
     Card* returnCard = dummy;

@@ -6,4 +6,10 @@
 Card *createDeck(char* stringDeckArray);
 void printDeck(Card *deck);
 
+extern char* loadFile(char filePath[]);
+extern Card *createDeck(char* stringDeck);
+extern void printDeck(Card *deck);
+extern int deckLength(Card* deck);
+extern int shuffleDeck(Card* deck, int split);
+extern int shuffleDeckRandom(Card* deck);
 #endif /* DECK_H */
