@@ -3,4 +3,4 @@ project(Machin-Project2 C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(Machin-Project2 project/core/src/main.c project/core/src/board.c project/core/src/card.c)
+add_executable(Machin-Project2 project/core/src/main.c project/core/src/board.c project/core/src/card.c project/core/src/deck.c)

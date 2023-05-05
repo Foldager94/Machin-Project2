@@ -4,62 +4,15 @@
 #include <stdlib.h>
 #include <string.h>
 #define NUM_CARDS 52
-#define defaultPath "../decks/unshuffled_deck.txt"
+#define defaultPath "./unshuffled_deck.txt"
 #define stringSize 208
-
-Card *createDeck(char* stringDeck) {
-    Card *deck = NULL;
-    Card *currentCard = NULL;
-    Card *previousCard = NULL;
-
-    // Init dummy card
-    deck = (Card*)malloc(sizeof(Card));
-    deck->isFlipped = false;
-    deck->cardValue = '0';
-    deck->cardSuit = '0';
-    deck->previous = NULL;
-    deck->next = NULL;
-
-    previousCard = deck;
-    // Find length of the stringDeck
-    int numCards = strlen(stringDeck) / 3;
-
-
-    for (int i = 0; i < numCards; i++){
-        currentCard = (Card*)malloc(sizeof(Card));
-        currentCard->isFlipped = false;
-        currentCard->cardSuit = stringDeck[i*4];
-        currentCard->cardValue = stringDeck[i*4+2];
-        currentCard->previous = previousCard;
-        currentCard->next = NULL;
-
-        previousCard->next = currentCard;
-        previousCard = currentCard;
-    };
-
-    currentCard->next = deck;
-    deck->previous = currentCard;
-
-    return deck;
-}
-void printDeck(Card *deck) {
-    printf("Deck:\n");
-    Card *currentCard = deck;
-    int test = 0;
-    while (test <= 52) {
-        printf("%c%c ", currentCard->cardSuit, currentCard->cardValue);
-        currentCard = currentCard->next;
-        test++;
-    }
-    printf("\n");
-}
 
 
 char* loadFile(char filePath[]){
     char tmpStringDeck[stringSize];
     FILE *fp;
     if(filePath == NULL){
-        fp = fopen(defaultPath, "r");
+        fp = fopen("/unshuffled_deck.txt", "r");
     }else{
         fp = fopen(filePath, "r");
     }
@@ -85,7 +38,7 @@ Card *createDeck(char* stringDeck) {
     Card *previousCard = NULL;
 
     // Init dummy card
-    deck = initCard();
+    deck = init_list();
 
     previousCard = deck;
 
@@ -103,7 +56,7 @@ Card *createDeck(char* stringDeck) {
 
     // Creats each card in the order that is given in the file
     for (int i = 0; i < numCards; i++){
-        currentCard = initCard();
+        currentCard = init_list();
         currentCard->cardSuit = stringDeck[i*4];
         currentCard->cardValue = stringDeck[i*4+2];
         currentCard->previous = previousCard;
@@ -147,8 +100,8 @@ int deckLength(Card* deck) {
 
 int shuffleDeck(Card* deck, int split){
 
-    Card *pileOne = initCard();
-    Card *pileTwo = initCard();
+    Card *pileOne = init_list();
+    Card *pileTwo = init_list();
     Card* currentCard = deck->next;
 
     //Divide the deck in to to piles based on split value
@@ -226,7 +179,7 @@ int shuffleDeck(Card* deck, int split){
 
 int shuffleDeckRandom(Card* deck){
     int deckSize = deckLength(deck);
-    Card *unshuffledDeck = initCard();
+    Card *unshuffledDeck = init_list();
     unshuffledDeck->next = deck->next;
     unshuffledDeck->previous = deck->previous;
 

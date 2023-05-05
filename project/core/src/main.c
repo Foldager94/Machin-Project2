@@ -14,14 +14,9 @@
 
 void printCommandLine(CommandLine*);
 
-Card* LD(char filePath[]){
-    char* stringDeck = loadFile(NULL);
-    Card *deck = createDeck(stringDeck);
-    free(stringDeck);
-    return deck;
-};
 
-int SL(Card* deck, char* split){
+
+/*int SL(Card* deck, char* split){
     int splitInt;
     if(strcmp(split, "") == 0){
         splitInt = randomNumber(53);
@@ -39,7 +34,7 @@ int SL(Card* deck, char* split){
 int SR(Card* deck){
     shuffleDeckRandom(deck);
     return 0;
-}
+}*/
 
 void TEST_ASCII_to_numeric() {
 
@@ -55,6 +50,7 @@ void TEST_ASCII_to_numeric() {
 int main() {
 
     Board gameBoard;
+    Card* Deck;
     CommandLine commandLine;
 
     //Initialize dummy elements
@@ -82,6 +78,11 @@ int main() {
         char input[101];
         fgets(input,sizeof(input),stdin);
 
+        Card* LD(char filePath[]){
+
+            return deck;
+        };
+
             if (input[0] == 'L' && input[1] == 'D') { //LD command
                 if (gameStarted) {
                     strcpy(commandLine.command, "LD");
@@ -90,14 +91,21 @@ int main() {
                 } else {
                     if (input[2] == '\n') {
                         //No file specified
+                        char* stringDeck = loadFile(NULL);
+                        Deck = createDeck(stringDeck);
+                        free(stringDeck);
+
+                        printDeck(Deck);
                     } else {
                         //file specified
+
                     }
                     deckLoaded = true;
 
                 }
 
-                //Print stuff
+                print_board(&gameBoard, false);
+                printCommandLine(&commandLine);
 
             } else if (input[0] == 'S' && input[1] == 'W') { //SW command
                 bool commandSuccessfull = false;
@@ -125,14 +133,20 @@ int main() {
                 print_board(&gameBoard, commandSuccessfull);
 
             } else if (input[0] == 'S' && input[1] == 'I') { //SI command
-                if (input[2] == '\n') {
+                int splitInt;
+                if (input[2] == '\0') {
                     //No split specified
+                    splitInt = randomNumber(53);
+                    shuffleDeck(deck, splitInt);
                 } else {
                     //split specified
+
                 }
 
             } else if (input[0] == 'S' && input[1] == 'R') { //SR command
-
+                if (!gameStarted) {
+                    shuffleDeckRandom(deck);
+                }
 
             } else if (input[0] == 'S' && input[1] == 'D') { //SD command
 
