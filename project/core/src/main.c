@@ -78,10 +78,6 @@ int main() {
         char input[101];
         fgets(input,sizeof(input),stdin);
 
-        Card* LD(char filePath[]){
-
-            return deck;
-        };
 
             if (input[0] == 'L' && input[1] == 'D') { //LD command
                 if (gameStarted) {

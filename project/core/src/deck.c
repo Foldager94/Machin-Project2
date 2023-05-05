@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #define NUM_CARDS 52
-#define defaultPath "./unshuffled_deck.txt"
+#define defaultPath "../project/core/src/unshuffled_deck.txt"
 #define stringSize 208
 
 
@@ -12,14 +12,14 @@ char* loadFile(char filePath[]){
     char tmpStringDeck[stringSize];
     FILE *fp;
     if(filePath == NULL){
-        fp = fopen("/unshuffled_deck.txt", "r");
+        fp = fopen(defaultPath, "r");
     }else{
         fp = fopen(filePath, "r");
     }
    
     //checks if the file is open correctly
     if (fp == NULL) { 
-        printf("Fejl ved åbning af filen\n");
+        printf("Error opening the file\n");
         return NULL;
     };
     
