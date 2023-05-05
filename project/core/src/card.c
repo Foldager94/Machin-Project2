@@ -79,6 +79,26 @@ void insert_list_in_list(Card* dummy, Card* first, Card* last) {
     dummy->previous = last;
 }
 
+// Removes all cards from the bottom of the list to the selected target (use with insert_list_in_list to perform a move)
+void remove_list_in_list(Card* dummy, Card* target) {
+    Card* new_last = dummy->previous;
+    while (new_last != target && new_last != dummy) {
+        new_last = new_last->previous;
+    }
+
+    // Ensure that target was actually found, otherwise do nothing
+    if (new_last != dummy) {
+        new_last = new_last->previous;
+        new_last->next = dummy;
+        dummy->previous = new_last;
+
+        // Fix dummy's next pointer, if column is now empty
+        if (dummy->next == target) {
+            dummy->next = dummy;
+        }
+    }
+}
+
 Card* init_list() {
     Card *dummy = (Card*)malloc(sizeof(Card));
     dummy->isFlipped = false;
@@ -93,7 +113,7 @@ Card* init_list() {
 // This will also free the memory allocated
 void clear_list(Card* dummy) {
     Card* previousPtr = dummy->previous;
-    while (previousPtr->cardValue != ' ') {
+    while (previousPtr != dummy) {
         Card* prevPreviousPtr = previousPtr->previous;
         free(previousPtr);
         previousPtr = prevPreviousPtr;
