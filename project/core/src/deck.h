@@ -12,4 +12,5 @@ extern void printDeck(Card *deck);
 extern int deckLength(Card* deck);
 extern int shuffleDeck(Card* deck, int split);
 extern int shuffleDeckRandom(Card* deck);
+extern int saveDeckToFile(Card *deck, char* fileName);
 #endif /* DECK_H */
