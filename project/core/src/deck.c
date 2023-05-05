@@ -69,6 +69,7 @@ Card *createDeck(char* stringDeck) {
         currentCard = init_list();
         currentCard->cardValue = stringDeck[i*3];
         currentCard->cardSuit = stringDeck[i*3+1];
+        currentCard->isFlipped = false;
         currentCard->previous = previousCard;
 
         previousCard->next = currentCard;
