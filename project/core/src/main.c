@@ -8,13 +8,25 @@
 #include <time.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <locale.h>
 
 #define COL_COUNT 7
 #define FOUNDATION_COUNT 4
 
 void printCommandLine(CommandLine*);
 
+#include <stdlib.h>
 
+void clearScreen(){
+    system("@cls||clear");
+}
+
+// Remember to free up the malloc after use
+char* readParameter(char input[]){
+    char* param = (char*)malloc(99);
+    strcpy(param, input+3);
+    return param;
+}
 
 /*int SL(Card* deck, char* split){
     int splitInt;
@@ -48,7 +60,6 @@ void TEST_ASCII_to_numeric() {
 }
 
 int main() {
-
     Board gameBoard;
     Card* Deck;
     CommandLine commandLine;
@@ -94,6 +105,10 @@ int main() {
                         printDeck(Deck);
                     } else {
                         //file specified
+                        char* parameter;
+                        parameter = readParameter(input);
+
+                        printf("%s", parameter);
 
                     }
                     deckLoaded = true;
