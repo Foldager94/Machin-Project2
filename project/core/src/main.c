@@ -48,8 +48,8 @@ void TEST_ASCII_to_numeric() {
 }
 
 void setCommandLine (CommandLine* commandLine, char msg[], char command[]) {
-    strcpy(commandLine->command, msg);
-    strcpy(commandLine->message, command);
+    strcpy(commandLine->message, msg);
+    strcpy(commandLine->command, command);
 }
 
 bool validateColumn (char input) {
@@ -64,16 +64,28 @@ bool validateFoundation (char input) {
     } else return false;
 }
 
-bool validateMoveToFoundaton (Card* toMove, Card* destination) {
-    if (destination->cardSuit == toMove->cardSuit && ASCII_to_numeric((int)destination->cardValue) - ASCII_to_numeric((int)toMove->cardValue) == -1 ) {
+bool validateMoveToFoundation (Card* toMove, Card* destination) {
+    if (toMove->next->cardValue == ' ') {
+        if (destination->cardValue == ' ' && toMove->cardValue == '1') {
+            return true;
+        } else if (destination->cardSuit == toMove->cardSuit && ASCII_to_numeric((int)destination->cardValue) - ASCII_to_numeric((int)toMove->cardValue) == -1 ) {
+            return true;
+        } else return false;
+    } else return false;
+
+}
+
+bool validateMoveToColumn (Card* toMove, Card* destination) {
+    if (destination->cardValue == ' ' && toMove->cardValue == 'K') {
+        return true;
+    } else if (destination->cardSuit != toMove->cardSuit && ASCII_to_numeric((int)destination->cardValue) - ASCII_to_numeric((int)toMove->cardValue) == 1 ) {
         return true;
     } else return false;
 }
 
-bool validateMoveToColumn (Card* toMove, Card* destination) {
-    if (destination->cardSuit != toMove->cardSuit && ASCII_to_numeric((int)destination->cardValue) - ASCII_to_numeric((int)toMove->cardValue) == 1 ) {
-        return true;
-    } else return false;
+void moveSingleCard (Card* toMovColumn, Card* destination) {
+    Card* toMove = pop_last_in_list(toMovColumn);
+    insert_next_in_list(destination->next, toMove);
 }
 
 
@@ -242,18 +254,14 @@ int main() {
                         if (toMove->cardValue != ' ') {
                             if (input[5] == '-' && input[6] == '>') {
                                 if (input[7] == 'F') {
-                                    if (toMove->next->cardValue == ' ') {  //Make sure it is the bottom card
                                         if (validateFoundation(input[8])) {
                                             Card* destination = gameBoard.foundations[ASCII_to_numeric((int) input[8])-1]->previous;
-                                            //Validate move
-                                            if (validateMoveToFoundaton(toMove, destination)) {
-                                                //Preform move to Foundation
-                                                toMove = pop_last_in_list(fromColumn);
-                                                insert_next_in_list(destination->next, toMove);
+
+                                            if (validateMoveToFoundation(toMove, destination)) {
+                                                moveSingleCard(fromColumn,destination);
                                                 setCommandLine(&commandLine, OK, input);
                                             }
                                         }
-                                    }
                                 } else if (input[7] == 'C') {
                                     if (validateColumn(input[8])) {
                                         Card* destination = gameBoard.columns[ASCII_to_numeric((int) input[8])-1]->previous;
@@ -274,18 +282,9 @@ int main() {
                             if (input[4] == 'F') {
                                 if (validateFoundation(input[5])) {
                                     Card* destination = gameBoard.foundations[ASCII_to_numeric((int) input[5])-1]->previous;
-                                    if (destination->cardValue == ' ' && fromColumn->previous->cardValue == '1' ) {  //CHANGE to A
-                                        Card* toMove = pop_last_in_list(fromColumn);
-                                        insert_next_in_list(destination->next, toMove);
 
-                                        setCommandLine(&commandLine, OK, input);
-
-                                    } else if (validateMoveToFoundaton(fromColumn->previous, destination)) {
-
-                                        //Move card
-                                        Card* toMove = pop_last_in_list(fromColumn);
-                                        insert_next_in_list(destination->next, toMove);
-
+                                    if (validateMoveToFoundation(fromColumn->previous, destination)) {
+                                        moveSingleCard(fromColumn,destination);
                                         setCommandLine(&commandLine, OK, input);
                                     }
                                 }
@@ -293,22 +292,11 @@ int main() {
                                 if (validateColumn(input[5])) {
                                     Card* destination = gameBoard.columns[ASCII_to_numeric((int) input[5])-1]->previous;
 
-                                    if (destination->cardValue == ' ' && fromColumn->previous->cardValue == 'K') {
-                                        Card* toMove = pop_last_in_list(fromColumn);
-                                        insert_next_in_list(destination->next, toMove);
-
-                                        setCommandLine(&commandLine, OK, input);
-
-                                    } else if (validateMoveToColumn(fromColumn->previous, destination)) {
-
-                                        //Move card
-                                        Card* toMove = pop_last_in_list(fromColumn);
-                                        insert_next_in_list(destination->next, toMove);
-
-                                        setCommandLine(&commandLine, OK, input);
+                                     if (validateMoveToColumn(fromColumn->previous, destination)) {
+                                         moveSingleCard(fromColumn,destination);
+                                         setCommandLine(&commandLine, OK, input);
                                     }
                                 }
-
                             }
                         }
                     }
@@ -319,59 +307,26 @@ int main() {
 
 
             } else if (input[0] == 'F') { //Move from faundation
-                if (input[1] == '1' || input[1] == '2' || input[1] == '3' || input[1] == '4') { //The FROM is recognized
-                    if (input[2] == '-' && input[3] == '>') { //Midle is recognized
-                        if (input[4] == 'C' && input[5] == '1' || input[5] == '2' || input[5] == '3' || input[5] == '4' || input[5] == '5' || input[5] == '6' || input[5] == '7') { //To is recognized
+                //Set defealt command and message
+                setCommandLine(&commandLine, ERROR, input);
+
+                if (validateFoundation(input[1])) {
+                    Card*  fromColumn = gameBoard.foundations[ASCII_to_numeric((int) input[1])-1];
+
+                    if (input[2] == '-' && input[3] == '>') {
+                        if (input[4] == 'C' && validateColumn(input[5])) {
                             Card* toMove = gameBoard.foundations[ASCII_to_numeric((int) input[1])-1]->previous;
                             Card* destination = gameBoard.columns[ASCII_to_numeric((int) input[5])-1]->previous;
 
                             //Check if piles are empty
-                            if (destination->cardValue == ' ' && toMove->cardValue == '1') { //change to A when cards are fixed
-                                toMove = pop_last_in_list(toMove->next);
-                                insert_next_in_list(destination->next, toMove);
+                            if (validateMoveToColumn(toMove, destination)) {
+                                moveSingleCard(fromColumn,destination);
 
-                                char msg[30];
-                                sprintf(msg,"F%c->C%c", toMove->cardValue, destination->cardValue);
-                                strcpy(commandLine.command, msg);
-                                strcpy(commandLine.message, "OK");
-                            } else if (toMove->cardValue == ' ') {
-                                strcpy(commandLine.command, " ");
-                                strcpy(commandLine.message, "Invalid move");
-                            } else {
-                                //Validate the move
-                                if (destination->cardSuit != toMove->cardSuit && ASCII_to_numeric((int)destination->cardValue) - ASCII_to_numeric((int)toMove->cardValue) == 1 )  {
-                                    //if valid move the card
-                                    toMove = pop_last_in_list(toMove->next);
-                                    insert_next_in_list(destination->next, toMove);
-
-                                    char msg[30];
-                                    sprintf(msg,"F%c->C%c", toMove->cardValue, destination->cardValue);
-                                    strcpy(commandLine.command, msg);
-                                    strcpy(commandLine.message, "OK");
-                                } else {
-                                    strcpy(commandLine.command, " ");
-                                    strcpy(commandLine.message, "Invalid move");
-                                }
+                                setCommandLine(&commandLine,OK,input);
                             }
-                        } else {
-                            strcpy(commandLine.command, " ");
-                            strcpy(commandLine.message, "Incorect command");
                         }
-                    } else {
-                        strcpy(commandLine.command, " ");
-                        strcpy(commandLine.message, "Incorect command");
                     }
-                } else {
-                    strcpy(commandLine.command, " ");
-                    strcpy(commandLine.message, "Incorect command");
                 }
-
-                 print_board(&gameBoard, false);
-                 printCommandLine(&commandLine);
-
-             } else { //unknown command
-                 strcpy(commandLine.command, " ");
-                 strcpy(commandLine.message, "Incorect command");
              }
 
             print_board(&gameBoard, showAll);
@@ -395,7 +350,7 @@ void printCommandLine (CommandLine* commandLine) {
 
         printf("LAST Command: ");
         int i = 0;
-        char current = commandLine->command[1];
+        char current = commandLine->command[i];
         while (current != '\n') {
             printf("%c", current);
             i ++;
