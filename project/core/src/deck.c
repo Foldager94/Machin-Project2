@@ -54,12 +54,11 @@ Card *createDeck(char* stringDeck) {
 
     // Find length of the stringDeck
     // It divids by 4 since each card in a file is representet by 3 chars and 1 whitespace
-    // Adds 1 to the count to compensate for the last cards missing whitespace
-    int numCards = strlen(stringDeck) / 3 +1;
+    int numCards = strlen(stringDeck) / 3;
 
     // Checks if the file contains 52 cards, returns null and print error if it is more or less then
     if(numCards != NUM_CARDS_ONE_DECK){
-        printf("Fejl i dækket: Dette er ikke et komplet sæt kort af 52\n");
+        printf("Error in deck: This is not a complete set of 52 cards.\n");
         return NULL;
     }
 
@@ -70,6 +69,7 @@ Card *createDeck(char* stringDeck) {
         currentCard->cardValue = stringDeck[i*3];
         currentCard->cardSuit = stringDeck[i*3+1];
         currentCard->previous = previousCard;
+        currentCard->next = NULL;
 
         previousCard->next = currentCard;
         previousCard = currentCard;
@@ -217,9 +217,35 @@ int shuffleDeckRandom(Card* deck){
     return 0;
 };
 
+char* deckToString(Card *deck, bool sperateWithNewLine){
+    int deckSize = deckLength(deck);
+    int stringLength = deckSize*3;
+    char *resultString = malloc(stringLength);
+    Card *currentCard = deck ->next;
+    char tmpString[4];
+    for(int i = 0; i < deckSize; i++){
+        if(currentCard->cardSuit==' '){
+            break;
+        }
+        if(sperateWithNewLine) {
+            sprintf(tmpString, "%c%c%c", currentCard->cardValue, currentCard->cardSuit, '\n');
+        }else{
+            sprintf(tmpString, "%c%c%c", currentCard->cardValue, currentCard->cardSuit, ' ');
+        }
+        if(i == 0){
+            strcpy(resultString,tmpString);
+        }else{
+
+            strcat(resultString,tmpString);
+        }
+        currentCard = currentCard->next;
+    };
+    return resultString;
+}
+
 int saveDeckToFile(Card *deck, char* fileName){
     int deckSize = deckLength(deck);
-    int stringLength = deckSize*4;
+    int stringLength = deckSize*3;
     char *resultString = malloc(stringLength);
     Card *currentCard = deck ->next;
     char tmpString[4];
@@ -239,10 +265,20 @@ int saveDeckToFile(Card *deck, char* fileName){
     FILE *fp;
     fp = fopen(fileName, "w");
     if (fp == NULL) {
-        printf("Error opening the file\n");
+        printf("saveDeckToFile: Error opening the file\n");
         return 1;
     };
     fprintf(fp, "%s", resultString);
     free(resultString);
     return 0;
+}
+
+void freeDeck(Card *deck) {
+    Card *currentCard = deck->next;
+    while (currentCard != deck) {
+        Card *temp = currentCard;
+        currentCard = currentCard->next;
+        free(temp);
+    }
+    free(deck);
 }
