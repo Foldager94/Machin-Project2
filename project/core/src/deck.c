@@ -244,6 +244,7 @@ int saveDeckToFile(Card *deck, char* fileName){
     };
     fprintf(fp, "%s", resultString);
     free(resultString);
+    fclose(fp);
     return 0;
 }
 
