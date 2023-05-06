@@ -107,8 +107,8 @@ void moveListOfCards (Card* first, Card* fromDummy, Card* toDummy) {
 }
 
 int main() {
-    //runTests();
-    //clearScreen();
+    runTests();
+    clearScreen();
 
     char NOT_AVAILABLE[] = "Command not available in the PLAY phase";
     char NO_DECK[] = "ERROR: No deck";
