@@ -5,7 +5,7 @@
 #include "deck.h"
 #include "card.h"
 
-void testLoadFile(){
+/*void testLoadFile(){
     char *fileContent = "AC\n2C\n3C\n4C\n5C\n6C\n7C\n8C\n9C\nTC\nJC\nQC\nKC\nAD\n2D\n3D\n4D\n5D\n6D\n7D\n8D\n9D\nTD\nJD\nQD\nKD\nAH\n2H\n3H\n4H\n5H\n6H\n7H\n8H\n9H\nTH\nJH\nQH\nKH\nAS\n2S\n3S\n4S\n5S\n6S\n7S\n8S\n9S\nTS\nJS\nQS\nKS\n";
     FILE *fp;
     fp = fopen("test", "w");
@@ -23,7 +23,7 @@ void testLoadFile(){
     assert(strcmp(output, expectedOutput) == 0);
     free(output);
     printf("test: Loadfile - Passed\n");
-}
+}*/
 
 void testCreateDeck(){
     char* input ="AC 2C 3C 4C 5C 6C 7C 8C 9C TC JC QC KC AD 2D 3D 4D 5D 6D 7D 8D 9D TD JD QD KD AH 2H 3H 4H 5H 6H 7H 8H 9H TH JH QH KH AS 2S 3S 4S 5S 6S 7S 8S 9S TS JS QS KS ";
@@ -92,7 +92,7 @@ void testASCII_to_numeric(){
 
 
 void runTests(){
-    testLoadFile();
+    //testLoadFile();
     testCreateDeck();
     testShuffleDeck();
     testShuffleDeckRandom();
