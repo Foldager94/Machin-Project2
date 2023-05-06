@@ -5,6 +5,22 @@
 #include "deck.h"
 #include "card.h"
 
+Card* create_test_deck(){
+    char *fileContent = "AC\n2C\n3C\n4C\n5C\n6C\n7C\n8C\n9C\nTC\nJC\nQC\nKC\nAD\n2D\n3D\n4D\n5D\n6D\n7D\n8D\n9D\nTD\nJD\nQD\nKD\nAH\n2H\n3H\n4H\n5H\n6H\n7H\n8H\n9H\nTH\nJH\nQH\nKH\nAS\n2S\n3S\n4S\n5S\n6S\n7S\n8S\n9S\nTS\nJS\nQS\nKS\n";
+    FILE *fp;
+    fp = fopen("test", "w");
+    if (fp == NULL) {
+        printf("testLoadFile Error: preparing file failed on opening the file\n");
+        return NULL;
+    };
+    fprintf(fp, "%s", fileContent);
+    fclose(fp);
+
+    Card* deck = load_deck("test");
+    remove("test");
+    return deck;
+}
+
 // LD test
 void test_load_deck(){
     //Create test file with cards
@@ -40,8 +56,7 @@ void test_load_deck(){
 
 // SL test
 void test_shuffle_deck(){
-    char* inputString ="AC 2C 3C 4C 5C 6C 7C 8C 9C TC JC QC KC AD 2D 3D 4D 5D 6D 7D 8D 9D TD JD QD KD AH 2H 3H 4H 5H 6H 7H 8H 9H TH JH QH KH AS 2S 3S 4S 5S 6S 7S 8S 9S TS JS QS KS ";
-    Card* input = createDeck(inputString);
+    Card* input = create_test_deck();
 
     shuffleDeck(input, 26);
     char* firstExpectedOutput = "AC AH 2C 2H 3C 3H 4C 4H 5C 5H 6C 6H 7C 7H 8C 8H 9C 9H TC TH JC JH QC QH KC KH AD AS 2D 2S 3D 3S 4D 4S 5D 5S 6D 6S 7D 7S 8D 8S 9D 9S TD TS JD JS QD QS KD KS ";
@@ -56,17 +71,19 @@ void test_shuffle_deck(){
     assert(strcmp(deckToString(input, false), thirdExpectedOutput) == 0);
 
     freeDeck(input);
-    printf("test: ShuffleDeck - Passed\n");
+    printf("test: (SL)ShuffleDeck - Passed\n");
 }
 
 // SR test
 void test_shuffle_deck_random(){
-    char* inputString ="AC 2C 3C 4C 5C 6C 7C 8C 9C TC JC QC KC AD 2D 3D 4D 5D 6D 7D 8D 9D TD JD QD KD AH 2H 3H 4H 5H 6H 7H 8H 9H TH JH QH KH AS 2S 3S 4S 5S 6S 7S 8S 9S TS JS QS KS ";
-    Card* input = createDeck(inputString);
+
+    Card* input = create_test_deck();
     shuffleDeckRandom(input);
+
+    char* inputString ="AC 2C 3C 4C 5C 6C 7C 8C 9C TC JC QC KC AD 2D 3D 4D 5D 6D 7D 8D 9D TD JD QD KD AH 2H 3H 4H 5H 6H 7H 8H 9H TH JH QH KH AS 2S 3S 4S 5S 6S 7S 8S 9S TS JS QS KS ";
     assert(strcmp(deckToString(input, false), inputString) != 0);
     freeDeck(input);
-    printf("test: ShuffleDeckRandom - Passed\n");
+    printf("test: (SR)ShuffleDeckRandom - Passed\n");
 
 }
 void testASCII_to_numeric(){
@@ -103,6 +120,7 @@ void test_save_deck(){
     Card* deck = load_deck("test");
     remove("test");
 
+    saveDeckToFile(deck, "test");
 
 
 }
@@ -113,6 +131,5 @@ void runTests(){
     test_load_deck();
     test_shuffle_deck();
     test_shuffle_deck_random();
-//    testShuffleDeckRandom();
-//    testASCII_to_numeric();
+    testASCII_to_numeric();
 }
