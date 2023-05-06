@@ -51,49 +51,6 @@ Card* load_deck(char filePath[]){
     //return stringDeck;
 }
 
-#define NUM_CARDS_ONE_DECK 52
-
-Card *createDeck(char* stringDeck) {
-    Card *deck = NULL;
-    Card *currentCard = NULL;
-    Card *previousCard = NULL;
-
-    // Init dummy card
-    deck = init_list();
-
-    previousCard = deck;
-
-    // Find length of the stringDeck
-    // It divids by 4 since each card in a file is representet by 3 chars and 1 whitespace
-    int numCards = strlen(stringDeck) / 3;
-
-    // Checks if the file contains 52 cards, returns null and print error if it is more or less then
-    if(numCards != NUM_CARDS_ONE_DECK){
-        printf("Error in deck: This is not a complete set of 52 cards.\n");
-        return NULL;
-    }
-
-
-    // Creats each card in the order that is given in the file
-    for (int i = 0; i < numCards; i++){
-        currentCard = init_list();
-        currentCard->cardValue = stringDeck[i*3];
-        currentCard->cardSuit = stringDeck[i*3+1];
-        currentCard->isFlipped = false;
-        currentCard->previous = previousCard;
-        currentCard->next = NULL;
-
-        previousCard->next = currentCard;
-        previousCard = currentCard;
-    };
-
-    // Links first card (Dummy Card) to the last card
-    currentCard->next = deck;
-    deck->previous = currentCard;
-
-    return deck;
-};
-
 void printDeck(Card *deck) {
     Card *currentCard = deck->next;
     printf("Deck:\n");
