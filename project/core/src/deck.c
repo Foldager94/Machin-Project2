@@ -21,8 +21,7 @@ Card* load_deck(char filePath[]){
     }
    
     //checks if the file is open correctly
-    if (fp == NULL) { 
-        printf("Error opening the file\n");
+    if (fp == NULL) {
         return NULL;
     }
 

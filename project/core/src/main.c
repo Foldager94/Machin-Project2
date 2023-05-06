@@ -77,7 +77,7 @@ bool validateFoundation (char input) {
 
 bool validateMoveToFoundation (Card* toMove, Card* destination) {
     if (toMove->next->cardValue == ' ') {
-        if (destination->cardValue == ' ' && toMove->cardValue == '1') {
+        if (destination->cardValue == ' ' && toMove->cardValue == 'A') {
             return true;
         } else if (destination->cardSuit == toMove->cardSuit && ASCII_to_numeric((int)destination->cardValue) - ASCII_to_numeric((int)toMove->cardValue) == -1 ) {
             return true;
@@ -94,16 +94,36 @@ bool validateMoveToColumn (Card* toMove, Card* destination) {
     } else return false;
 }
 
-void moveSingleCard (Card* toMovColumn, Card* destination) {
-    Card* toMove = pop_last_in_list(toMovColumn);
+void moveSingleCard (Card* toMoveColumn, Card* destination) {
+    Card* newLast = toMoveColumn->previous->previous;
+    newLast->isFlipped = true;
+
+    Card* toMove = pop_last_in_list(toMoveColumn);
     insert_next_in_list(destination->next, toMove);
 }
 
 void moveListOfCards (Card* first, Card* fromDummy, Card* toDummy) {
+    Card* newLast = first->previous;
+    newLast->isFlipped = true;
+
     Card* last = fromDummy->previous;
 
     remove_list_in_list(fromDummy, first);
     insert_list_in_list(toDummy,first,last);
+}
+
+bool checkWin (Board* gameboard) {
+
+    bool isWon = true;
+
+    for (int i = 0; i < 7; i++) {
+        if (gameboard->columns[i]->previous->cardValue != ' ') {
+            isWon = false;
+            break;
+        }
+    }
+
+    return isWon;
 }
 
 int main() {
@@ -114,6 +134,7 @@ int main() {
     char NO_DECK[] = "ERROR: No deck";
     char ERROR[] = "ERROR: Unknown command";
     char OK[] = "OK";
+    char NO_FILE[] = "File not found";
 
     Board gameBoard;
     Card* deck;
@@ -151,30 +172,23 @@ int main() {
             //Determening the input
             if (input[0] == 'L' && input[1] == 'D') { //LD command
                 if (gameStarted) {
-
-                    sprintf(command,"%c%c", input[0], input[1]);
-                    strcpy(commandLine.command, command);
-                    strcpy(commandLine.message, NOT_AVAILABLE);
-
+                    setCommandLine(&commandLine, NOT_AVAILABLE, input);
                 } else {
-                    if (input[2] == '\n') {
-                        //No file specified
-                        //char* stringDeck = loadFile(NULL);
-                        //Deck = createDeck(stringDeck);
-                        //free(stringDeck);
-                        deck = load_deck(NULL);
+                    char* parameter = NULL;
+
+                    if (input[2] != '\n') {
+                        parameter = readParameter(input);
+                    }
+                    deck = load_deck(parameter);
+                    if (deck != NULL) {
                         deckCopy = init_list();
                         make_copy(deck, deckCopy);
                         place_deck(&gameBoard, deckCopy);
                         deckLoaded = true;
 
+                        setCommandLine(&commandLine, OK, input);
                     } else {
-                        //file specified
-                        char* parameter;
-                        parameter = readParameter(input);
-
-                        printf("%s", parameter);
-
+                        setCommandLine(&commandLine, NO_FILE, input);
                     }
                 }
 
@@ -351,7 +365,11 @@ int main() {
                             if (validateMoveToColumn(toMove, destination)) {
                                 moveSingleCard(fromColumn,destination);
 
-                                setCommandLine(&commandLine,OK,input);
+                                if (checkWin(&gameBoard)) {
+                                    setCommandLine(&commandLine, "You have won!", input);
+                                } else {
+                                    setCommandLine(&commandLine,OK,input);
+                                }
                             }
                         }
                     }
