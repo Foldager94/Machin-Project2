@@ -140,7 +140,7 @@ int main() {
 
     Board gameBoard;
     Card* deck;
-    Card* deckCopy;
+    Card* deckCopy = init_list();
     CommandLine commandLine;
 
     //Initialize dummy elements
@@ -183,9 +183,19 @@ int main() {
                     }
                     deck = load_deck(parameter);
                     if (deck != NULL) {
-                        deckCopy = init_list();
+                        // Clear copy and board
+                        clear_list(deckCopy);
+                        for (int i = 0; i < COL_COUNT; i++) {
+                            clear_list(gameBoard.columns[i]);
+                            if (i < FOUNDATION_COUNT) {
+                                clear_list(gameBoard.foundations[i]);
+                            }
+                        }
+
+                        // Make copy and place it
                         make_copy(deck, deckCopy);
                         place_deck(&gameBoard, deckCopy);
+
                         deckLoaded = true;
 
                         setCommandLine(&commandLine, OK, input);
@@ -206,6 +216,18 @@ int main() {
                             setCommandLine(&commandLine, NO_DECK, input);
                         } else {
                             setCommandLine(&commandLine, OK, input);
+                            // Clear copy and board
+                            clear_list(deckCopy);
+                            for (int i = 0; i < COL_COUNT; i++) {
+                                clear_list(gameBoard.columns[i]);
+                                if (i < FOUNDATION_COUNT) {
+                                    clear_list(gameBoard.foundations[i]);
+                                }
+                            }
+
+                            // Make copy and place it
+                            make_copy(deck, deckCopy);
+                            place_deck(&gameBoard, deckCopy);
                             showAll = true;
                         }
                     } else {
@@ -231,6 +253,9 @@ int main() {
             } else if (input[0] == 'S' && input[1] == 'R') { //SR command
                 if (!gameStarted) {
                     shuffleDeckRandom(deck);
+                    setCommandLine(&commandLine,OK,input);
+                } else {
+                    setCommandLine(&commandLine,NOT_AVAILABLE,input);
                 }
 
 
@@ -258,10 +283,19 @@ int main() {
                         } else {
                             //Deal cards and start game
                             gameStarted = true;
+
+                            // Clear copy and board
+                            clear_list(deckCopy);
                             for (int i = 0; i < COL_COUNT; i++) {
                                 clear_list(gameBoard.columns[i]);
+                                if (i < FOUNDATION_COUNT) {
+                                    clear_list(gameBoard.foundations[i]);
+                                }
                             }
-                            deal_cards(&gameBoard, deck);
+
+                            // Make copy and deal cards
+                            make_copy(deck, deckCopy);
+                            deal_cards(&gameBoard, deckCopy);
                             setCommandLine(&commandLine, OK, input);
                         }
                     }
@@ -276,7 +310,20 @@ int main() {
                     if (gameStarted) {
                         gameStarted = false;
 
-                        //reload the deck
+                        // Clear copy and board
+                        clear_list(deckCopy);
+                        for (int i = 0; i < COL_COUNT; i++) {
+                            clear_list(gameBoard.columns[i]);
+                            if (i < FOUNDATION_COUNT) {
+                                clear_list(gameBoard.foundations[i]);
+                            }
+                        }
+
+                        // Make copy and place it
+                        make_copy(deck, deckCopy);
+                        place_deck(&gameBoard, deckCopy);
+
+                        setCommandLine(&commandLine, OK, input);
                     } else {
                         setCommandLine(&commandLine, NOT_AVAILABLE, input);
                     }
