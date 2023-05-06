@@ -133,8 +133,10 @@ int main() {
     char NOT_AVAILABLE[] = "Command not available in the PLAY phase";
     char NO_DECK[] = "ERROR: No deck";
     char ERROR[] = "ERROR: Unknown command";
+    char INVALID[] = "Invalid move";
     char OK[] = "OK";
     char NO_FILE[] = "File not found";
+    char WINNER[] = "You win!!!";
 
     Board gameBoard;
     Card* deck;
@@ -349,7 +351,14 @@ int main() {
 
                                             if (validateMoveToFoundation(toMove, destination)) {
                                                 moveSingleCard(fromColumn,destination);
-                                                setCommandLine(&commandLine, OK, input);
+
+                                                if (checkWin(&gameBoard)) {
+                                                    setCommandLine(&commandLine, WINNER, input);
+                                                } else {
+                                                    setCommandLine(&commandLine, OK, input);
+                                                }
+                                            } else {
+                                                setCommandLine(&commandLine, INVALID, input);
                                             }
                                         }
                                 } else if (input[7] == 'C') {
@@ -362,6 +371,8 @@ int main() {
                                             moveListOfCards(toMove,fromColumn,destination->next);
 
                                             setCommandLine(&commandLine, OK, input);
+                                        } else {
+                                            setCommandLine(&commandLine, INVALID, input);
                                         }
                                     }
                                 }
@@ -375,7 +386,14 @@ int main() {
 
                                     if (validateMoveToFoundation(fromColumn->previous, destination)) {
                                         moveSingleCard(fromColumn,destination);
-                                        setCommandLine(&commandLine, OK, input);
+
+                                        if (checkWin(&gameBoard)) {
+                                            setCommandLine(&commandLine, WINNER, input);
+                                        } else {
+                                            setCommandLine(&commandLine, OK, input);
+                                        }
+                                    } else {
+                                        setCommandLine(&commandLine, INVALID, input);
                                     }
                                 }
                             } else if (input[4] == 'C') {
@@ -385,12 +403,13 @@ int main() {
                                      if (validateMoveToColumn(fromColumn->previous, destination)) {
                                          moveSingleCard(fromColumn,destination);
                                          setCommandLine(&commandLine, OK, input);
-                                    }
+                                    } else {
+                                         setCommandLine(&commandLine, INVALID, input);
+                                     }
                                 }
                             }
                         }
                     }
-
                 }
 
 
@@ -410,13 +429,9 @@ int main() {
 
                             //Check if piles are empty
                             if (validateMoveToColumn(toMove, destination)) {
-                                moveSingleCard(fromColumn,destination);
+                                moveSingleCard(fromColumn, destination);
 
-                                if (checkWin(&gameBoard)) {
-                                    setCommandLine(&commandLine, "You have won!", input);
-                                } else {
-                                    setCommandLine(&commandLine,OK,input);
-                                }
+                                setCommandLine(&commandLine, OK, input);
                             }
                         }
                     }
