@@ -112,7 +112,6 @@ void moveListOfCards (Card* first, Card* fromDummy, Card* toDummy) {
     insert_list_in_list(toDummy,first,last);
 }
 
-
 int main() {
     //runTests();
     //clearScreen();
