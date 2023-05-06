@@ -15,4 +15,5 @@ extern int shuffleDeckRandom(Card* deck);
 extern int saveDeckToFile(Card *deck, char* fileName);
 extern char* deckToString(Card *deck, bool sperateWithNewLine);
 extern void freeDeck(Card *deck);
+extern Card* load_deck(char filePath[]);
 #endif /* DECK_H */

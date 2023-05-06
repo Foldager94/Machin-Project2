@@ -109,15 +109,16 @@ void moveListOfCards (Card* first, Card* fromDummy, Card* toDummy) {
 
 int main() {
     //runTests();
-    clearScreen();
+    //clearScreen();
 
     char NOT_AVAILABLE[] = "Command not available in the PLAY phase";
-    char NO_DECK[] = "ERROR no deck";
-    char ERROR[] = "ERROR unknown command";
-    char OK[] = "Ok";
+    char NO_DECK[] = "ERROR: No deck";
+    char ERROR[] = "ERROR: Unknown command";
+    char OK[] = "OK";
 
     Board gameBoard;
-    Card* Deck;
+    Card* deck;
+    Card* deckCopy;
     CommandLine commandLine;
 
     //Initialize dummy elements
@@ -139,7 +140,6 @@ int main() {
     bool isRunning = true;
     bool gameStarted = false;
     bool deckLoaded = false;
-    Card* deck;
 
     while (isRunning) {
         bool showAll = false;
@@ -160,10 +160,13 @@ int main() {
                 } else {
                     if (input[2] == '\n') {
                         //No file specified
-                        char* stringDeck = loadFile(NULL);
-                        Deck = createDeck(stringDeck);
-                        free(stringDeck);
-
+                        //char* stringDeck = loadFile(NULL);
+                        //Deck = createDeck(stringDeck);
+                        //free(stringDeck);
+                        deck = load_deck(NULL);
+                        deckCopy = init_list();
+                        make_copy(deck, deckCopy);
+                        place_deck(&gameBoard, deckCopy);
                         deckLoaded = true;
 
                     } else {
@@ -240,7 +243,10 @@ int main() {
                         } else {
                             //Deal cards and start game
                             gameStarted = true;
-                            deal_cards(&gameBoard, Deck);
+                            for (int i = 0; i < COL_COUNT; i++) {
+                                clear_list(gameBoard.columns[i]);
+                            }
+                            deal_cards(&gameBoard, deck);
                             setCommandLine(&commandLine, OK, input);
                         }
                     }

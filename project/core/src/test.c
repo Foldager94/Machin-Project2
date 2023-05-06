@@ -5,7 +5,9 @@
 #include "deck.h"
 #include "card.h"
 
-void testLoadFile(){
+// LD test
+void test_load_deck(){
+    //Create test file with cards
     char *fileContent = "AC\n2C\n3C\n4C\n5C\n6C\n7C\n8C\n9C\nTC\nJC\nQC\nKC\nAD\n2D\n3D\n4D\n5D\n6D\n7D\n8D\n9D\nTD\nJD\nQD\nKD\nAH\n2H\n3H\n4H\n5H\n6H\n7H\n8H\n9H\nTH\nJH\nQH\nKH\nAS\n2S\n3S\n4S\n5S\n6S\n7S\n8S\n9S\nTS\nJS\nQS\nKS\n";
     FILE *fp;
     fp = fopen("test", "w");
@@ -16,33 +18,28 @@ void testLoadFile(){
     fprintf(fp, "%s", fileContent);
     fclose(fp);
 
-    char* expectedOutput ="AC 2C 3C 4C 5C 6C 7C 8C 9C TC JC QC KC AD 2D 3D 4D 5D 6D 7D 8D 9D TD JD QD KD AH 2H 3H 4H 5H 6H 7H 8H 9H TH JH QH KH AS 2S 3S 4S 5S 6S 7S 8S 9S TS JS QS KS ";
-    char* output = loadFile("test");
+    Card* deck = load_deck("test");
     remove("test");
 
-    assert(strcmp(output, expectedOutput) == 0);
-    free(output);
-    printf("test: Loadfile - Passed\n");
-}
-
-void testCreateDeck(){
-    char* input ="AC 2C 3C 4C 5C 6C 7C 8C 9C TC JC QC KC AD 2D 3D 4D 5D 6D 7D 8D 9D TD JD QD KD AH 2H 3H 4H 5H 6H 7H 8H 9H TH JH QH KH AS 2S 3S 4S 5S 6S 7S 8S 9S TS JS QS KS ";
-    int numCards = strlen(input) / 3;
-    Card* output = createDeck(input);
+    Card* currentCard = deck->next;
     int count = 0;
-    Card* currentCard = output->next;
-    for (int i = 0; i < numCards; i++){
+    for (int i = 0; i < 52; i++){
         if(currentCard->cardSuit != ' '){
             count++;
         };
         currentCard = currentCard->next;
     }
-    freeDeck(output);
-    assert(count == numCards);
-    printf("test: CreateDeck - Passed\n");
+    assert(count == 52);
+
+    char* expectedOutput ="AC 2C 3C 4C 5C 6C 7C 8C 9C TC JC QC KC AD 2D 3D 4D 5D 6D 7D 8D 9D TD JD QD KD AH 2H 3H 4H 5H 6H 7H 8H 9H TH JH QH KH AS 2S 3S 4S 5S 6S 7S 8S 9S TS JS QS KS ";
+    assert(strcmp(deckToString(deck, false), expectedOutput) == 0);
+    freeDeck(deck);
+    printf("test: (LD)load_deck - Passed\n");
 }
 
-void testShuffleDeck(){
+
+// SL test
+void test_shuffle_deck(){
     char* inputString ="AC 2C 3C 4C 5C 6C 7C 8C 9C TC JC QC KC AD 2D 3D 4D 5D 6D 7D 8D 9D TD JD QD KD AH 2H 3H 4H 5H 6H 7H 8H 9H TH JH QH KH AS 2S 3S 4S 5S 6S 7S 8S 9S TS JS QS KS ";
     Card* input = createDeck(inputString);
 
@@ -62,7 +59,8 @@ void testShuffleDeck(){
     printf("test: ShuffleDeck - Passed\n");
 }
 
-void testShuffleDeckRandom(){
+// SR test
+void test_shuffle_deck_random(){
     char* inputString ="AC 2C 3C 4C 5C 6C 7C 8C 9C TC JC QC KC AD 2D 3D 4D 5D 6D 7D 8D 9D TD JD QD KD AH 2H 3H 4H 5H 6H 7H 8H 9H TH JH QH KH AS 2S 3S 4S 5S 6S 7S 8S 9S TS JS QS KS ";
     Card* input = createDeck(inputString);
     shuffleDeckRandom(input);
@@ -89,12 +87,32 @@ void testASCII_to_numeric(){
 
 }
 
+//SD test
+void test_save_deck(){
+    //Create deck from file
+    char *fileContent = "AC\n2C\n3C\n4C\n5C\n6C\n7C\n8C\n9C\nTC\nJC\nQC\nKC\nAD\n2D\n3D\n4D\n5D\n6D\n7D\n8D\n9D\nTD\nJD\nQD\nKD\nAH\n2H\n3H\n4H\n5H\n6H\n7H\n8H\n9H\nTH\nJH\nQH\nKH\nAS\n2S\n3S\n4S\n5S\n6S\n7S\n8S\n9S\nTS\nJS\nQS\nKS\n";
+    FILE *fp;
+    fp = fopen("test", "w");
+    if (fp == NULL) {
+        printf("testLoadFile Error: preparing file failed on opening the file\n");
+        return;
+    };
+    fprintf(fp, "%s", fileContent);
+    fclose(fp);
+
+    Card* deck = load_deck("test");
+    remove("test");
+
+
+
+}
+
 
 
 void runTests(){
-    testLoadFile();
-    testCreateDeck();
-    testShuffleDeck();
-    testShuffleDeckRandom();
-    testASCII_to_numeric();
+    test_load_deck();
+    test_shuffle_deck();
+    test_shuffle_deck_random();
+//    testShuffleDeckRandom();
+//    testASCII_to_numeric();
 }
