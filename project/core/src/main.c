@@ -251,6 +251,9 @@ int main() {
             } else if (input[0] == 'S' && input[1] == 'R') { //SR command
                 if (!gameStarted) {
                     shuffleDeckRandom(deck);
+                    setCommandLine(&commandLine,OK,input);
+                } else {
+                    setCommandLine(&commandLine,NOT_AVAILABLE,input);
                 }
 
 
@@ -278,15 +281,15 @@ int main() {
                         } else {
                             //Deal cards and start game
                             gameStarted = true;
+
+                            // Clear copy and board
+                            clear_list(deckCopy);
                             for (int i = 0; i < COL_COUNT; i++) {
                                 clear_list(gameBoard.columns[i]);
                                 if (i < FOUNDATION_COUNT) {
                                     clear_list(gameBoard.foundations[i]);
                                 }
                             }
-
-                            // Clear copy and board
-                            clear_list(deckCopy);
 
                             // Make copy and deal cards
                             make_copy(deck, deckCopy);
@@ -309,6 +312,9 @@ int main() {
                         clear_list(deckCopy);
                         for (int i = 0; i < COL_COUNT; i++) {
                             clear_list(gameBoard.columns[i]);
+                            if (i < FOUNDATION_COUNT) {
+                                clear_list(gameBoard.foundations[i]);
+                            }
                         }
 
                         // Make copy and place it

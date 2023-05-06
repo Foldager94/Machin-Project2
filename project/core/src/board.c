@@ -53,6 +53,9 @@ void deal_cards(Board* board, Card* deck) {
     // Last open card in the last column
     current->isFlipped = true;
     insert_next_in_list(board->columns[6], current);
+
+    deck->next = deck;
+    deck->previous = deck;
 }
 
 void place_deck(Board* board, Card* deck) {
