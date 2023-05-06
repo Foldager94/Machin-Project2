@@ -105,12 +105,8 @@ void moveListOfCards (Card* first, Card* fromDummy, Card* toDummy) {
     remove_list_in_list(fromDummy, first);
     insert_list_in_list(toDummy,first,last);
 }
-int main(){
-    runTests();
-    return 0;
-}
 
-int main1() {
+int main() {
     //runTests();
     //clearScreen();
 
