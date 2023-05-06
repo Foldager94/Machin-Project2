@@ -52,7 +52,7 @@ Card* find_card(Card* dummy, char thisCardValue, char thisCardSuit ) {
             break;
         } else {
             if (current->cardValue == thisCardValue && current->cardSuit == thisCardSuit) {
-                returnCard == current;
+                returnCard = current;
                 moreCards = false;
                 break;
             }
