@@ -1,19 +1,20 @@
-#include "game.h";
+#include <string.h>
+#include "game.h"
+#include "test.h"
 
-int main() {
-    game();
+const char argTest[] = "-test";
 
+int main(int argc, char *argv[]) {
+    if (argc > 1) {
+        if (strcmp(argv[1], argTest) == 0) {
+            runTests();
+            return 0;
+        }
+    }
+
+    run_game();
     return 0;
 }
-
-
-
-
-
-
-
-
-
 
 /*int stringToInt(char* str) {
     int result = 0;

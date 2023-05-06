@@ -1,7 +1,3 @@
-//
-// Created by Sandie on 06-05-2023.
-//
-
 #include <stdio.h>
 #include "board.h"
 #include "card.h"
@@ -15,7 +11,11 @@
 #define FOUNDATION_COUNT 4
 
 void clearScreen() {
-    system("@cls||clear");
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
 }
 
 bool validateColumn (char input) {
@@ -81,13 +81,13 @@ bool checkWin (Board* gameboard) {
     return isWon;
 }
 
-void game() {
+void run_game() {
     char NOT_AVAILABLE[] = "Command not available in the PLAY phase";
     char NO_DECK[] = "ERROR: No deck";
     char ERROR[] = "ERROR: Unknown command";
-    char INVALID[] = "Invalid move";
+    char INVALID[] = "ERROR: Invalid move";
     char OK[] = "OK";
-    char NO_FILE[] = "File not found";
+    char NO_FILE[] = "ERROR: File not found";
     char WINNER[] = "You win!!!";
 
     Board gameBoard;
@@ -388,6 +388,8 @@ void game() {
                     }
                 }
             }
+        } else {
+            setCommandLine(&commandLine, ERROR, input);
         }
 
         clearScreen();
