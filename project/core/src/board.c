@@ -72,27 +72,6 @@ void place_deck(Board* board, Card* deck) {
     deck->previous = deck;
 }
 
-void remake_deck(Board* board, Card* deck) {
-    Card* cards[COL_COUNT];
-    for (int i = 0; i < COL_COUNT; i++) {
-        cards[i] = board->columns[i];
-    }
-
-    int counter = 0;
-    int columnCounter = 0;
-    while (counter < DECK_SIZE) {
-        int currentColumn = columnCounter % COL_COUNT;
-        Card* current = cards[currentColumn]->next;
-        if (current->cardValue != ' ') {
-            Card* nextCard = current->next;
-            insert_next_in_list(deck, current);
-            cards[currentColumn] = nextCard;
-            counter++;
-        }
-        columnCounter++;
-    }
-}
-
 //Print the board with the current cards
 void print_board(Board* board, bool showAll) {
     printf("C1\tC2\tC3\tC4\tC5\tC6\tC7\t\t\n\n");
