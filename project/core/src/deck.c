@@ -12,11 +12,10 @@
 
 
 Card* load_deck(char filePath[]){
-    //setlocale(LC_ALL, "UTF-8");
     FILE *fp;
-    if(filePath == NULL){
+    if (filePath == NULL) {
         fp = fopen(defaultPath, "r");
-    }else{
+    } else{
         fp = fopen(filePath, "r");
     }
    
@@ -24,12 +23,6 @@ Card* load_deck(char filePath[]){
     if (fp == NULL) {
         return NULL;
     }
-
-    //fseek(fp, 0, SEEK_END);
-    //int file_size = ftell(fp);
-    //rewind(fp);
-    //char* stringDeck = (char*) malloc(stringSize+1);
-    //fread(stringDeck, sizeof(char), file_size, fp);*/
 
     Card* deck = init_list();
     char read[LINE_SIZE + 1];
@@ -45,9 +38,8 @@ Card* load_deck(char filePath[]){
     }
 
     fclose(fp);
-    return deck;
 
-    //return stringDeck;
+    return deck;
 }
 
 int deckLength(Card* deck) {

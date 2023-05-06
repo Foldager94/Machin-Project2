@@ -17,6 +17,6 @@ bool validateMoveToColumn (Card* toMove, Card* destination);
 void moveSingleCard (Card* toMoveColumn, Card* destination);
 void moveListOfCards (Card* first, Card* fromDummy, Card* toDummy);
 bool checkWin (Board* gameboard);
-void game();
+void run_game();
 
 #endif //MACHIN_PROJECT2_GAME_H
