@@ -50,19 +50,6 @@ Card* load_deck(char filePath[]){
     //return stringDeck;
 }
 
-void printDeck(Card *deck) {
-    Card *currentCard = deck->next;
-    printf("Deck:\n");
-    while (true) {
-        printf("%c%c ", currentCard->cardValue, currentCard->cardSuit);
-        currentCard = currentCard->next;
-        if(currentCard->cardSuit == ' '){
-            break;
-        };
-    }
-    printf("\n\n");
-};
-
 int deckLength(Card* deck) {
     int count = 0;
     Card* current = deck;
@@ -255,4 +242,10 @@ void freeDeck(Card *deck) {
         free(temp);
     }
     free(deck);
+}
+
+char* readParameter(char input[]){
+    char* param = (char*)malloc(99);
+    strcpy(param, input+3);
+    return param;
 }

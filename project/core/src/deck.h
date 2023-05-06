@@ -16,4 +16,6 @@ extern int saveDeckToFile(Card *deck, char* fileName);
 extern char* deckToString(Card *deck, bool sperateWithNewLine);
 extern void freeDeck(Card *deck);
 extern Card* load_deck(char filePath[]);
+extern char* readParameter(char input[]);
+
 #endif /* DECK_H */

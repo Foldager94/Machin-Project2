@@ -11,4 +11,7 @@ typedef struct commandLine {
     char message[MESSAGE_SIZE];
 }CommandLine;
 
+extern void printCommandLine (CommandLine* commandLine);
+void setCommandLine (CommandLine* commandLine, char msg[], char command[]);
+
 #endif
