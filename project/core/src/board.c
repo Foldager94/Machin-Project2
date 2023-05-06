@@ -56,20 +56,17 @@ void deal_cards(Board* board, Card* deck) {
 }
 
 void place_deck(Board* board, Card* deck) {
-    // Pointers to each column card
-    Card* cards[COL_COUNT];
-    for (int i = 0; i < COL_COUNT; i++) {
-        cards[i] = board->columns[i];
-    }
-
     Card* current = deck->next;
     Card* nextCard = current->next;
     for (int i = 0; i < DECK_SIZE; i++) {
         int currentColumn = i % COL_COUNT;
-        insert_next_in_list(cards[currentColumn], current);
+        insert_next_in_list(board->columns[currentColumn], current);
         current = nextCard;
         nextCard = current->next;
     }
+
+    deck->next = deck;
+    deck->previous = deck;
 }
 
 void remake_deck(Board* board, Card* deck) {
