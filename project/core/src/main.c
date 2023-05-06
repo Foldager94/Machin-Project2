@@ -94,12 +94,18 @@ bool validateMoveToColumn (Card* toMove, Card* destination) {
     } else return false;
 }
 
-void moveSingleCard (Card* toMovColumn, Card* destination) {
-    Card* toMove = pop_last_in_list(toMovColumn);
+void moveSingleCard (Card* toMoveColumn, Card* destination) {
+    Card* newLast = toMoveColumn->previous->previous;
+    newLast->isFlipped = true;
+
+    Card* toMove = pop_last_in_list(toMoveColumn);
     insert_next_in_list(destination->next, toMove);
 }
 
 void moveListOfCards (Card* first, Card* fromDummy, Card* toDummy) {
+    Card* newLast = first->previous;
+    newLast->isFlipped = true;
+
     Card* last = fromDummy->previous;
 
     remove_list_in_list(fromDummy, first);
