@@ -302,7 +302,11 @@ int main() {
 
                                             if (validateMoveToFoundation(toMove, destination)) {
                                                 moveSingleCard(fromColumn,destination);
-                                                setCommandLine(&commandLine, OK, input);
+
+                                                if (checkWin(&gameBoard)) {
+                                                    setCommandLine(&commandLine, "You have won!", input);
+                                                } else {
+                                                    setCommandLine(&commandLine,OK,input);
                                             }
                                         }
                                 } else if (input[7] == 'C') {
@@ -328,7 +332,11 @@ int main() {
 
                                     if (validateMoveToFoundation(fromColumn->previous, destination)) {
                                         moveSingleCard(fromColumn,destination);
-                                        setCommandLine(&commandLine, OK, input);
+
+                                        if (checkWin(&gameBoard)) {
+                                            setCommandLine(&commandLine, "You have won!", input);
+                                        } else {
+                                            setCommandLine(&commandLine,OK,input);
                                     }
                                 }
                             } else if (input[4] == 'C') {
@@ -365,12 +373,10 @@ int main() {
                             if (validateMoveToColumn(toMove, destination)) {
                                 moveSingleCard(fromColumn,destination);
 
-                                if (checkWin(&gameBoard)) {
-                                    setCommandLine(&commandLine, "You have won!", input);
-                                } else {
-                                    setCommandLine(&commandLine,OK,input);
-                                }
-                            }
+                                setCommandLine(&commandLine,OK,input);
+
+
+
                         }
                     }
                 }
