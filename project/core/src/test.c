@@ -16,7 +16,8 @@ Card* create_test_deck(){
     fprintf(fp, "%s", fileContent);
     fclose(fp);
 
-    Card* deck = load_deck("test");
+    Card* deck = init_list();
+    load_deck("test", deck);
     remove("test");
     return deck;
 }
@@ -34,7 +35,8 @@ void test_load_deck(){
     fprintf(fp, "%s", fileContent);
     fclose(fp);
 
-    Card* deck = load_deck("test");
+    Card* deck = init_list();
+    load_deck("test", deck);
     remove("test");
 
     Card* currentCard = deck->next;
@@ -115,7 +117,8 @@ void test_save_deck(){
     Card* deckExpectet = create_test_deck();
 
     saveDeckToFile(deckExpectet, "saved_deck");
-    Card* deck = load_deck("saved_deck");
+    Card* deck = init_list();
+    load_deck("saved_deck", deck);
 
     Card* current1 = deckExpectet;
     Card* current2 = deck;
