@@ -23,7 +23,7 @@ int load_deck(char filePath[], Card* deck) {
    
     //checks if the file is open correctly
     if (fp == NULL) {
-        return 1;
+        return -1;
     }
 
     char read[LINE_SIZE + 1];
@@ -31,17 +31,22 @@ int load_deck(char filePath[], Card* deck) {
     int cardCounter = 0;
     while (!feof(fp)) {
         if (fgets (read, sizeof(read), fp) != NULL) {
-            Card* card = (Card*) malloc(sizeof(Card));
             cardCounter++;
+
+            Card* card = (Card*) malloc(sizeof(Card));
             char value = read[0];
             char suit = read[1];
 
             if (!(suit == ASCII_C || suit == ASCII_D || suit == ASCII_H || suit == ASCII_S)) {
+                clear_list(deck);
+                free(deck);
                 return cardCounter;
             }
 
             int asciiValue = ASCII_to_numeric(value);
             if (asciiValue < 1 || asciiValue > 13) {
+                clear_list(deck);
+                free(deck);
                 return cardCounter;
             }
 
@@ -58,7 +63,7 @@ int load_deck(char filePath[], Card* deck) {
     if (cardCounter != NUM_CARDS) {
         clear_list(deck);
         free(deck);
-        return -1;
+        return cardCounter;
     }
 
     return 0;
