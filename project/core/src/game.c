@@ -81,8 +81,62 @@ bool checkWin (Board* gameboard) {
     return isWon;
 }
 
+Card* createKing (char suit) {
+    Card *newCard = (Card *) malloc(sizeof(Card));
+    newCard->isFlipped = true;
+    newCard->cardSuit = suit;
+    newCard->cardValue = 'K';
+
+    return newCard;
+}
+
+void autoComplete (Board* gameboard) {
+    for (int i = 0; i < 7; i++) {
+        clear_list(gameboard->columns[i]);
+    }
+
+    char suits[] = "SDHC";
+    char suitsUsed[] = "    ";
+
+    for (int i = 0; i < FOUNDATION_COUNT; i++) {
+        Card *current = gameboard->foundations[i]->previous;
+
+        if (current->cardSuit != ' ') {
+
+            char suit = current->cardSuit;
+
+            Card* newCard = createKing(suit);
+            insert_next_in_list(gameboard->foundations[i], newCard);
+
+            suitsUsed[i] = suit;
+
+            for (int i = 0; i < FOUNDATION_COUNT; i++) {
+                if (suits[i] == suit) {
+                    suits[i] = ' ';
+                }
+            }
+        }
+    }
+
+    for (int i = 0; i < FOUNDATION_COUNT; i++) {
+        if (suitsUsed[i] == ' ') {
+            for (int j = 0; j < FOUNDATION_COUNT; j++) {
+                if (suits[j] != ' ') {
+                    Card* newCard = createKing(suits[j]);
+                    insert_next_in_list(gameboard->foundations[i], newCard);
+                    suits[j] = ' ';
+                    break;
+                }
+            }
+        }
+    }
+}
+
+
+
 void run_game() {
     char NOT_AVAILABLE[] = "Command not available in the PLAY phase";
+    char NOT_AVAILABLE_STARTUP[] = "Command not available in the STARTUP phase";
     char NO_DECK[] = "ERROR: No deck";
     char ERROR[] = "ERROR: Unknown command";
     char INVALID[] = "ERROR: Invalid move";
@@ -163,6 +217,7 @@ void run_game() {
                         INVALID_FILE[39] = (char)(secondDigit + '0');
                     } else {
                         INVALID_FILE[38] = (char)(loadResponse + '0');
+                        INVALID_FILE[39] = ' ';
                     }
 
                     setCommandLine(&commandLine, INVALID_FILE, input);
@@ -297,26 +352,70 @@ void run_game() {
 
 
         } else if (input[0] == 'C' ) { //Move command
-            //Set defealt command and message
-            setCommandLine(&commandLine, ERROR, input);
 
-            if (validateColumn(input[1])) {
-                Card* fromColumn = gameBoard.columns[ASCII_to_numeric((int) input[1])-1];         //Save the column to move from
+            if (!gameStarted) {
+                setCommandLine(&commandLine, NOT_AVAILABLE_STARTUP, input);
+            } else {
+                setCommandLine(&commandLine, ERROR, input);
 
-                if (input[2] == ':'){
-                    Card* toMove = find_card(fromColumn, input[3], input[4]);
+                if (validateColumn(input[1])) {
+                    Card *fromColumn = gameBoard.columns[ASCII_to_numeric((int) input[1]) -
+                                                         1];         //Save the column to move from
 
-                    if (toMove->cardValue != ' ') {
-                        if (input[5] == '-' && input[6] == '>') {
-                            if (input[7] == 'F') {
-                                if (validateFoundation(input[8])) {
-                                    Card* destination = gameBoard.foundations[ASCII_to_numeric((int) input[8])-1]->previous;
+                    if (input[2] == ':') {
+                        Card *toMove = find_card(fromColumn, input[3], input[4]);
 
-                                    if (validateMoveToFoundation(toMove, destination)) {
-                                        moveSingleCard(fromColumn,destination);
+                        if (toMove->cardValue != ' ') {
+                            if (input[5] == '-' && input[6] == '>') {
+                                if (input[7] == 'F') {
+                                    if (validateFoundation(input[8])) {
+                                        Card *destination = gameBoard.foundations[ASCII_to_numeric((int) input[8]) -
+                                                                                  1]->previous;
+
+                                        if (validateMoveToFoundation(toMove, destination)) {
+                                            moveSingleCard(fromColumn, destination);
+
+                                            if (checkWin(&gameBoard)) {
+                                                setCommandLine(&commandLine, WINNER, input);
+                                                gameStarted = false;
+                                            } else {
+                                                setCommandLine(&commandLine, OK, input);
+                                            }
+                                        } else {
+                                            setCommandLine(&commandLine, INVALID, input);
+                                        }
+                                    }
+                                } else if (input[7] == 'C') {
+                                    if (validateColumn(input[8])) {
+                                        Card *destination = gameBoard.columns[ASCII_to_numeric((int) input[8]) -
+                                                                              1]->previous;
+
+                                        //Validate move
+                                        if (validateMoveToColumn(toMove, destination)) {
+
+                                            moveListOfCards(toMove, fromColumn, destination->next);
+
+                                            setCommandLine(&commandLine, OK, input);
+                                        } else {
+                                            setCommandLine(&commandLine, INVALID, input);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        if (input[2] == '-' && input[3] == '>') {
+                            if (input[4] == 'F') {
+                                if (validateFoundation(input[5])) {
+                                    Card *destination = gameBoard.foundations[ASCII_to_numeric((int) input[5]) -
+                                                                              1]->previous;
+
+                                    if (validateMoveToFoundation(fromColumn->previous, destination)) {
+                                        moveSingleCard(fromColumn, destination);
 
                                         if (checkWin(&gameBoard)) {
                                             setCommandLine(&commandLine, WINNER, input);
+                                            gameStarted = false;
                                         } else {
                                             setCommandLine(&commandLine, OK, input);
                                         }
@@ -324,50 +423,17 @@ void run_game() {
                                         setCommandLine(&commandLine, INVALID, input);
                                     }
                                 }
-                            } else if (input[7] == 'C') {
-                                if (validateColumn(input[8])) {
-                                    Card* destination = gameBoard.columns[ASCII_to_numeric((int) input[8])-1]->previous;
+                            } else if (input[4] == 'C') {
+                                if (validateColumn(input[5])) {
+                                    Card *destination = gameBoard.columns[ASCII_to_numeric((int) input[5]) -
+                                                                          1]->previous;
 
-                                    //Validate move
-                                    if (validateMoveToColumn(toMove, destination)) {
-
-                                        moveListOfCards(toMove,fromColumn,destination->next);
-
+                                    if (validateMoveToColumn(fromColumn->previous, destination)) {
+                                        moveSingleCard(fromColumn, destination);
                                         setCommandLine(&commandLine, OK, input);
                                     } else {
                                         setCommandLine(&commandLine, INVALID, input);
                                     }
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    if (input[2] == '-' && input[3] == '>') {
-                        if (input[4] == 'F') {
-                            if (validateFoundation(input[5])) {
-                                Card* destination = gameBoard.foundations[ASCII_to_numeric((int) input[5])-1]->previous;
-
-                                if (validateMoveToFoundation(fromColumn->previous, destination)) {
-                                    moveSingleCard(fromColumn,destination);
-
-                                    if (checkWin(&gameBoard)) {
-                                        setCommandLine(&commandLine, WINNER, input);
-                                    } else {
-                                        setCommandLine(&commandLine, OK, input);
-                                    }
-                                } else {
-                                    setCommandLine(&commandLine, INVALID, input);
-                                }
-                            }
-                        } else if (input[4] == 'C') {
-                            if (validateColumn(input[5])) {
-                                Card* destination = gameBoard.columns[ASCII_to_numeric((int) input[5])-1]->previous;
-
-                                if (validateMoveToColumn(fromColumn->previous, destination)) {
-                                    moveSingleCard(fromColumn,destination);
-                                    setCommandLine(&commandLine, OK, input);
-                                } else {
-                                    setCommandLine(&commandLine, INVALID, input);
                                 }
                             }
                         }
@@ -379,26 +445,65 @@ void run_game() {
 
 
         } else if (input[0] == 'F') { //Move from faundation
-            //Set defealt command and message
-            setCommandLine(&commandLine, ERROR, input);
+            if (!gameStarted) {
+                setCommandLine(&commandLine, NOT_AVAILABLE_STARTUP, input);
+            } else {
+                //Set defealt command and message
+                setCommandLine(&commandLine, ERROR, input);
 
-            if (validateFoundation(input[1])) {
-                Card*  fromColumn = gameBoard.foundations[ASCII_to_numeric((int) input[1])-1];
+                if (validateFoundation(input[1])) {
+                    Card *fromColumn = gameBoard.foundations[ASCII_to_numeric((int) input[1]) - 1];
 
-                if (input[2] == '-' && input[3] == '>') {
-                    if (input[4] == 'C' && validateColumn(input[5])) {
-                        Card* toMove = gameBoard.foundations[ASCII_to_numeric((int) input[1])-1]->previous;
-                        Card* destination = gameBoard.columns[ASCII_to_numeric((int) input[5])-1]->previous;
+                    if (input[2] == '-' && input[3] == '>') {
+                        if (input[4] == 'C' && validateColumn(input[5])) {
+                            Card *toMove = gameBoard.foundations[ASCII_to_numeric((int) input[1]) - 1]->previous;
+                            Card *destination = gameBoard.columns[ASCII_to_numeric((int) input[5]) - 1]->previous;
 
-                        //Check if piles are empty
-                        if (validateMoveToColumn(toMove, destination)) {
-                            moveSingleCard(fromColumn, destination);
+                            //Check if piles are empty
+                            if (validateMoveToColumn(toMove, destination)) {
+                                moveSingleCard(fromColumn, destination);
 
-                            setCommandLine(&commandLine, OK, input);
+                                setCommandLine(&commandLine, OK, input);
+                            }
                         }
                     }
                 }
             }
+
+
+
+        }else if (input[0] == 'A' && input[1] == 'U' && input[2] == 'T' && input[3] == 'O') {
+            bool notAbleToComplete = false;
+
+            for (int i = 0; i < 7; i++) {
+                Card* current = gameBoard.columns[i]->next;
+
+                if (!current->isFlipped) {
+                    notAbleToComplete = true;
+                    break;
+                }
+
+
+                while (current->next->cardValue != ' ') {
+                    int currentValue = ASCII_to_numeric(current->cardValue);
+                    int nextValue = ASCII_to_numeric(current->next->cardValue);
+
+                    if (currentValue - nextValue != 1) {
+                        notAbleToComplete = true;
+                    }
+
+                    current = current->next;
+                }
+            }
+
+            if (notAbleToComplete) {
+                setCommandLine(&commandLine, INVALID, input);
+            } else {
+                setCommandLine(&commandLine, WINNER, input);
+                autoComplete(&gameBoard);
+                gameStarted = !checkWin(&gameBoard);
+            }
+
         } else {
             setCommandLine(&commandLine, ERROR, input);
         }
