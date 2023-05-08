@@ -5,7 +5,7 @@
 #include <string.h>
 #include "card.h"
 #define NUM_CARDS 52
-#define defaultPath "../project/core/src/unshuffled_deck.txt"
+#define defaultPath "../project/core/src/easy_deck.txt"
 #define LINE_SIZE 3
 
 #define ASCII_C 67
