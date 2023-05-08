@@ -226,7 +226,7 @@ void runGame() {
                     setCommandLine(&commandLine, INVALID_FILE, input);
                 }
             }
-
+            makeBoardCopy(&gameBoard);
 
 
         }else if (toupper(input[0]) == 'S' && toupper(input[1]) == 'W') { //SW command
@@ -293,7 +293,6 @@ void runGame() {
 
 
             }
-
 
 
         }else if (toupper(input[0]) == 'S' && toupper(input[1]) == 'R') { //SR command

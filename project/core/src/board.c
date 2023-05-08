@@ -128,26 +128,25 @@ void printBoard(Board* board, bool showAll) {
 
     }
 
-
 }
- Board make_board_copy(Board* source) {
 
-    Board newBoard;
-
-
+Board* makeBoardCopy(Board* source) {
+    Board* newBoard = malloc(sizeof(Board));
     // Copy columns
     for (int i = 0; i < COL_COUNT; i++) {
-        Card* temp_card = source ->columns[i];
-        make_copy(temp_card, newBoard.columns[i]);
+        Card* tmp_card = initList();
+        makeCopy(source->columns[i], tmp_card);
+
+        newBoard->columns[i] = tmp_card;
 
     }
 
     // Copy foundations
     for (int i = 0; i < FOUNDATION_COUNT; i++) {
 
-        Card* temp_card = source ->foundations[i];
-        make_copy(temp_card, newBoard.foundations[i]);
-
+        Card* tmp_card = initList();
+        makeCopy(source->foundations[i], tmp_card);
+        newBoard->foundations[i] = tmp_card;
 
     }
     return newBoard;

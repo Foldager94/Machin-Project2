@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "board.h"
+#include "game.h"
 
 #define MAX_MOVES 100
 
@@ -8,7 +9,7 @@
 typedef struct {
     char deck[52];
 
-    
+
 } GameState;
 
 typedef struct {
@@ -20,7 +21,7 @@ typedef struct {
 GameState* newGameState() {
     GameState* newState = malloc(sizeof(GameState));
 
-    makeBoardCopy;
+
     return newState;
 }
 
