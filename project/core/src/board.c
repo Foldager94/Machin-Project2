@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "card.h"
 #include "board.h"
 
@@ -124,4 +125,26 @@ void printBoard(Board* board, bool showAll) {
         printf("\n");
         counter++;
     }
+}
+
+Board* makeBoardCopy(Board* source) {
+    Board* newBoard = malloc(sizeof(Board));
+    // Copy columns
+    for (int i = 0; i < COL_COUNT; i++) {
+        Card* tmp_card = initList();
+        makeCopy(source->columns[i], tmp_card);
+
+        newBoard->columns[i] = tmp_card;
+
+    }
+
+    // Copy foundations
+    for (int i = 0; i < FOUNDATION_COUNT; i++) {
+
+        Card* tmp_card = initList();
+        makeCopy(source->foundations[i], tmp_card);
+        newBoard->foundations[i] = tmp_card;
+
+    }
+    return newBoard;
 }

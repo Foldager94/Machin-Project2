@@ -3,6 +3,7 @@
 #include "card.h"
 #include "commandLine.h"
 #include "deck.h"
+#include "gameState.h"
 #include <stdbool.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -155,6 +156,11 @@ void runGame() {
     Card* deck = initList();
     Card* deckCopy = initList();
     CommandLine commandLine;
+    GameState* gameState = initGameState();
+    int gameStateCounter = 0;
+
+    gameState->next = gameState;
+    gameState->previuse = gameState;
 
     //Initialize dummy elements
     for (int i = 0; i < COL_COUNT; i++) {
@@ -208,7 +214,6 @@ void runGame() {
                     placeDeck(&gameBoard, deckCopy);
 
                     deckLoaded = true;
-
                     setCommandLine(&commandLine, OK, input);
                 } else if (loadResponse == -1) { // File not found
                     setCommandLine(&commandLine, NO_FILE, input);
@@ -354,6 +359,8 @@ void runGame() {
                         // Make copy and deal cards
                         makeCopy(deck, deckCopy);
                         dealCards(&gameBoard, deckCopy);
+                        Board* lolBoard = makeBoardCopy(&gameBoard);
+                        saveGameState(lolBoard, gameState);
                         setCommandLine(&commandLine, OK, input);
                     }
                 }
@@ -414,7 +421,8 @@ void runGame() {
 
                                         if (validateMoveToFoundation(toMove, destination)) {
                                             moveSingleCard(fromColumn, destination);
-
+                                            Board* lolBoard = makeBoardCopy(&gameBoard);
+                                            saveGameState(lolBoard, gameState);
                                             if (checkWin(&gameBoard)) {
                                                 setCommandLine(&commandLine, WINNER, input);
                                                 gameStarted = false;
@@ -433,7 +441,8 @@ void runGame() {
                                         if (validateMoveToColumn(toMove, destination)) {
 
                                             moveListOfCards(toMove, fromColumn, destination->next);
-
+                                            Board* lolBoard = makeBoardCopy(&gameBoard);
+                                            saveGameState(lolBoard, gameState);
                                             setCommandLine(&commandLine, OK, input);
                                         } else {
                                             setCommandLine(&commandLine, INVALID, input);
@@ -450,7 +459,8 @@ void runGame() {
 
                                     if (validateMoveToFoundation(fromColumn->previous, destination)) {
                                         moveSingleCard(fromColumn, destination);
-
+                                        Board* lolBoard = makeBoardCopy(&gameBoard);
+                                        saveGameState(lolBoard, gameState);
                                         if (checkWin(&gameBoard)) {
                                             setCommandLine(&commandLine, WINNER, input);
                                             gameStarted = false;
@@ -467,6 +477,8 @@ void runGame() {
 
                                     if (validateMoveToColumn(fromColumn->previous, destination)) {
                                         moveSingleCard(fromColumn, destination);
+                                        Board* lolBoard = makeBoardCopy(&gameBoard);
+                                        saveGameState(lolBoard, gameState);
                                         setCommandLine(&commandLine, OK, input);
                                     } else {
                                         setCommandLine(&commandLine, INVALID, input);
@@ -495,6 +507,8 @@ void runGame() {
                             //Check if piles are empty
                             if (validateMoveToColumn(toMove, destination)) {
                                 moveSingleCard(fromColumn, destination);
+                                Board* lolBoard = makeBoardCopy(&gameBoard);
+                                saveGameState(lolBoard, gameState);
 
                                 setCommandLine(&commandLine, OK, input);
                             }
@@ -533,7 +547,16 @@ void runGame() {
                 autoComplete(&gameBoard);
                 gameStarted = !checkWin(&gameBoard);
             }
-
+        }else if (toupper(input[0]) == 'U' && toupper(input[1]) == 'N' && toupper(input[2]) == 'D' && toupper(input[3]) == 'O') {
+                gameStateCounter++;
+                changeGameState(&gameBoard, gameState, gameStateCounter);
+                setCommandLine(&commandLine, OK, input);
+        }else if (toupper(input[0]) == 'R' && toupper(input[1]) == 'E' && toupper(input[2]) == 'D' && toupper(input[3]) == 'O') {
+            if(gameStateCounter >0) {
+                gameStateCounter--;
+                changeGameState(&gameBoard, gameState, gameStateCounter);
+                setCommandLine(&commandLine, OK, input);
+            }
         } else {
             setCommandLine(&commandLine, ERROR, input);
         }
