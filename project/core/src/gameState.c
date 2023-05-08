@@ -8,23 +8,23 @@ GameState* initGameState(){
     GameState* gameState = malloc(sizeof(GameState));
     gameState->board=NULL;
     gameState->next=NULL;
-    gameState->previuse=NULL;
+    gameState->previous=NULL;
 }
 
 void saveGameState(Board* board, GameState* destination){
     GameState* gameState = malloc(sizeof(GameState));
     gameState->board = board;
     gameState->next = destination;
-    gameState->previuse = destination->previuse;
-    destination->previuse->next = gameState;
-    destination->previuse = gameState;
+    gameState->previous = destination->previous;
+    destination->previous->next = gameState;
+    destination->previous = gameState;
 
 };
 
 void changeGameState(Board* board, GameState* gameState, int gameStateCounter){
-    GameState* currentGameState = gameState->previuse;
+    GameState* currentGameState = gameState->previous;
     for(int i = 0; i<gameStateCounter;i++){
-        currentGameState = currentGameState->previuse;
+        currentGameState = currentGameState->previous;
     }
     for (int i = 0; i < 7; i++) {
         board->columns[i] = currentGameState->board->columns[i];

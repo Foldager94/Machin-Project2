@@ -10,7 +10,7 @@
 typedef struct gameState{
     Board* board;
     struct gameState* next;
-    struct gameState* previuse;
+    struct gameState* previous;
 }GameState;
 
 extern void saveGameState(Board* board, GameState* destination);

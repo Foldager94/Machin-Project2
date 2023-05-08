@@ -160,7 +160,7 @@ void runGame() {
     int gameStateCounter = 0;
 
     gameState->next = gameState;
-    gameState->previuse = gameState;
+    gameState->previous = gameState;
 
     //Initialize dummy elements
     for (int i = 0; i < COL_COUNT; i++) {
@@ -493,7 +493,7 @@ void runGame() {
             if (!gameStarted) {
                 setCommandLine(&commandLine, NOT_AVAILABLE_STARTUP, input);
             } else {
-                //Set defealt command and message
+                //Set default command and message
                 setCommandLine(&commandLine, ERROR, input);
 
                 if (validateFoundation(input[1])) {
@@ -548,9 +548,15 @@ void runGame() {
                 gameStarted = !checkWin(&gameBoard);
             }
         }else if (toupper(input[0]) == 'U' && toupper(input[1]) == 'N' && toupper(input[2]) == 'D' && toupper(input[3]) == 'O') {
+                if () {
                 gameStateCounter++;
                 changeGameState(&gameBoard, gameState, gameStateCounter);
                 setCommandLine(&commandLine, OK, input);
+        } else {
+                    setCommandLine(&commandLine, ERROR, input);
+                }
+
+
         }else if (toupper(input[0]) == 'R' && toupper(input[1]) == 'E' && toupper(input[2]) == 'D' && toupper(input[3]) == 'O') {
             if(gameStateCounter >0) {
                 gameStateCounter--;
