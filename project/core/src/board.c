@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <malloc.h>
 #include "card.h"
 #include "board.h"
 
@@ -123,5 +124,46 @@ void print_board(Board* board, bool showAll) {
 
         printf("\n");
         counter++;
+
+
+    }
+
+
+}
+void make_board_copy(Board* source, Board* dest) {
+    // Copy columns
+    for (int i = 0; i < COL_COUNT; i++) {
+        Card* column_source = source->columns[i]->next;
+        Card* column_dest = dest->columns[i];
+
+        while (column_source->cardValue != ' ') {
+            Card* new_card = (Card *)malloc(sizeof(Card));
+            *new_card = *column_source;
+            new_card->next = NULL;
+            new_card->previous = NULL;
+
+            insert_next_in_list(column_dest, new_card);
+
+            column_source = column_source->next;
+            column_dest = column_dest->next;
+        }
+    }
+
+    // Copy foundations
+    for (int i = 0; i < FOUNDATION_COUNT; i++) {
+        Card* foundation_source = source->foundations[i]->next;
+        Card* foundation_dest = dest->foundations[i];
+
+        while (foundation_source->cardValue != ' ') {
+            Card* new_card = (Card *)malloc(sizeof(Card));
+            *new_card = *foundation_source;
+            new_card->next = NULL;
+            new_card->previous = NULL;
+
+            insert_next_in_list(foundation_dest, new_card);
+
+            foundation_source = foundation_source->next;
+            foundation_dest = foundation_dest->next;
+        }
     }
 }
