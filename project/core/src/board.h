@@ -11,9 +11,8 @@ typedef struct board {
     Card* foundations[NUM_FOUNDATIONS];
 }Board;
 
-extern void deal_cards(Board* board, Card* deck);
-extern void print_board(Board* board, bool showAll);
-extern void place_deck(Board* board, Card* deck);
-extern Board make_board_copy(Board* source);
+extern void dealCards(Board* board, Card* deck);
+extern void printBoard(Board* board, bool showAll);
+extern void placeDeck(Board* board, Card* deck);
 
 #endif

@@ -1,7 +1,3 @@
-//
-// Created by Sandie on 06-05-2023.
-//
-
 #ifndef MACHIN_PROJECT2_GAME_H
 #define MACHIN_PROJECT2_GAME_H
 
@@ -16,7 +12,7 @@ bool validateMoveToFoundation (Card* toMove, Card* destination);
 bool validateMoveToColumn (Card* toMove, Card* destination);
 void moveSingleCard (Card* toMoveColumn, Card* destination);
 void moveListOfCards (Card* first, Card* fromDummy, Card* toDummy);
-bool checkWin (Board* gameboard);
-void run_game();
+bool checkWin (Board* board);
+void runGame();
 
-#endif //MACHIN_PROJECT2_GAME_H
+#endif

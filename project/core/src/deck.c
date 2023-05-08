@@ -3,43 +3,72 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include <locale.h>
 #include "card.h"
 #define NUM_CARDS 52
 #define defaultPath "../project/core/src/unshuffled_deck.txt"
-#define stringSize 155
 #define LINE_SIZE 3
 
+#define ASCII_C 67
+#define ASCII_D 68
+#define ASCII_H 72
+#define ASCII_S 83
 
-Card* load_deck(char filePath[]){
+int load_deck(char filePath[], Card* deck) {
     FILE *fp;
     if (filePath == NULL) {
         fp = fopen(defaultPath, "r");
     } else{
+        int len = strcspn(filePath, "\n");
+        if(filePath[len] == '\n') {
+            filePath[len] = '\0';
+        }
         fp = fopen(filePath, "r");
     }
-   
     //checks if the file is open correctly
     if (fp == NULL) {
-        return NULL;
+        return -1;
     }
-
-    Card* deck = init_list();
     char read[LINE_SIZE + 1];
 
+    int cardCounter = 0;
     while (!feof(fp)) {
         if (fgets (read, sizeof(read), fp) != NULL) {
+            cardCounter++;
+
             Card* card = (Card*) malloc(sizeof(Card));
-            card->cardValue = read[0];
-            card->cardSuit = read[1];
+            char value = read[0];
+            char suit = read[1];
+
+            if (!(suit == ASCII_C || suit == ASCII_D || suit == ASCII_H || suit == ASCII_S)) {
+                clearList(deck);
+                free(deck);
+                return cardCounter;
+            }
+
+            int asciiValue = asciiToNumeric(value);
+            if (asciiValue < 1 || asciiValue > 13) {
+                clearList(deck);
+                free(deck);
+                return cardCounter;
+            }
+
+            card->cardValue = value;
+            card->cardSuit = suit;
             card->isFlipped = false;
-            insert_next_in_list(deck, card);
+
+            insertNextInList(deck, card);
         }
     }
 
     fclose(fp);
 
-    return deck;
+    if (cardCounter != NUM_CARDS) {
+        clearList(deck);
+        free(deck);
+        return cardCounter;
+    }
+
+    return 0;
 }
 
 int deckLength(Card* deck) {
@@ -57,8 +86,8 @@ int deckLength(Card* deck) {
 
 int shuffleDeck(Card* deck, int split){
 
-    Card *pileOne = init_list();
-    Card *pileTwo = init_list();
+    Card *pileOne = initList();
+    Card *pileTwo = initList();
     Card* currentCard = deck->next;
 
     //Divide the deck in to to piles based on split value
@@ -136,7 +165,7 @@ int shuffleDeck(Card* deck, int split){
 
 int shuffleDeckRandom(Card* deck){
     int deckSize = deckLength(deck);
-    Card *unshuffledDeck = init_list();
+    Card *unshuffledDeck = initList();
     unshuffledDeck->next = deck->next;
     unshuffledDeck->previous = deck->previous;
 
@@ -214,6 +243,10 @@ int saveDeckToFile(Card *deck, char* fileName){
     if(fileName == NULL){
         fp = fopen("cards.txt", "w");
     } else{
+        int len = strcspn(fileName, "\n");
+        if(fileName[len] == '\n'){
+            fileName[len] = '\0';
+        }
         fp = fopen(fileName, "w");
     }
     if (fp == NULL) {

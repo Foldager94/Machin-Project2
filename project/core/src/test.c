@@ -16,7 +16,8 @@ Card* create_test_deck(){
     fprintf(fp, "%s", fileContent);
     fclose(fp);
 
-    Card* deck = load_deck("test");
+    Card* deck = initList();
+    load_deck("test", deck);
     remove("test");
     return deck;
 }
@@ -34,7 +35,8 @@ void test_load_deck(){
     fprintf(fp, "%s", fileContent);
     fclose(fp);
 
-    Card* deck = load_deck("test");
+    Card* deck = initList();
+    load_deck("test", deck);
     remove("test");
 
     Card* currentCard = deck->next;
@@ -92,20 +94,20 @@ void test_shuffle_deck_random(){
 
 }
 void testASCII_to_numeric(){
-    assert(ASCII_to_numeric((int)'A') == 1);
-    assert(ASCII_to_numeric((int)'T') == 10);
-    assert(ASCII_to_numeric((int)'J') == 11);
-    assert(ASCII_to_numeric((int)'Q') == 12);
-    assert(ASCII_to_numeric((int)'K') == 13);
-    assert(ASCII_to_numeric((int)'2') == 2);
-    assert(ASCII_to_numeric((int)'3') == 3);
-    assert(ASCII_to_numeric((int)'4') == 4);
-    assert(ASCII_to_numeric((int)'5') == 5);
-    assert(ASCII_to_numeric((int)'6') == 6);
-    assert(ASCII_to_numeric((int)'7') == 7);
-    assert(ASCII_to_numeric((int)'8') == 8);
-    assert(ASCII_to_numeric((int)'9') == 9);
-    printf("ASCII_to_numeric - Passed\n");
+    assert(asciiToNumeric((int) 'A') == 1);
+    assert(asciiToNumeric((int) 'T') == 10);
+    assert(asciiToNumeric((int) 'J') == 11);
+    assert(asciiToNumeric((int) 'Q') == 12);
+    assert(asciiToNumeric((int) 'K') == 13);
+    assert(asciiToNumeric((int) '2') == 2);
+    assert(asciiToNumeric((int) '3') == 3);
+    assert(asciiToNumeric((int) '4') == 4);
+    assert(asciiToNumeric((int) '5') == 5);
+    assert(asciiToNumeric((int) '6') == 6);
+    assert(asciiToNumeric((int) '7') == 7);
+    assert(asciiToNumeric((int) '8') == 8);
+    assert(asciiToNumeric((int) '9') == 9);
+    printf("asciiToNumeric - Passed\n");
 
 }
 
@@ -115,7 +117,8 @@ void test_save_deck(){
     Card* deckExpectet = create_test_deck();
 
     saveDeckToFile(deckExpectet, "saved_deck");
-    Card* deck = load_deck("saved_deck");
+    Card* deck = initList();
+    load_deck("saved_deck", deck);
 
     Card* current1 = deckExpectet;
     Card* current2 = deck;
