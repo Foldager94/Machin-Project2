@@ -90,6 +90,8 @@ void run_game() {
     char NO_FILE[] = "ERROR: File not found";
     char INVALID_FILE[] = "ERROR: File is invalid. Error on line   ";
     char WINNER[] = "You win!!!";
+    char SPLIT_ERROR[] = "ERROR: Split must be between 1 - 52";
+    char SAVE_FILE_ERROR[]= "ERROR: Could not save the deck";
 
     Board gameBoard;
     Card* deck = init_list();
@@ -204,14 +206,36 @@ void run_game() {
 
         } else if (toupper(input[0]) == 'S' && toupper(input[1]) == 'I') { //SI command
             int splitInt;
-            if (input[2] == '\0') {
+            if (input[2] == '\n') {
                 //No split specified
                 splitInt = randomNumber(53);
                 shuffleDeck(deck, splitInt);
+                setCommandLine(&commandLine,OK,input);
             } else {
                 //split specified
-                char* parameter = readParameter(input);
-                
+                if(input[5] == '\n'){
+                    splitInt = ASCII_to_numeric(input[3])*10+ASCII_to_numeric(input[4]);
+                    printf("%d",splitInt);
+                        if(0 < splitInt && splitInt < 53){
+                            shuffleDeck(deck, splitInt);
+                            setCommandLine(&commandLine,OK,input);
+                        }else{
+                            setCommandLine(&commandLine,SPLIT_ERROR,input);
+                        }
+                }else if(input[4] == '\n'){
+                    splitInt = ASCII_to_numeric(input[3]);
+                    printf("%d",splitInt);
+                    if(0 < splitInt && splitInt < 9){
+                        shuffleDeck(deck, splitInt);
+                        setCommandLine(&commandLine,OK,input);
+                    }else{
+                        setCommandLine(&commandLine,SPLIT_ERROR,input);
+                    }
+                }else {
+                    setCommandLine(&commandLine,SPLIT_ERROR,input);
+                }
+
+
             }
 
 
@@ -227,7 +251,22 @@ void run_game() {
 
 
         } else if (toupper(input[0]) == 'S' && toupper(input[1]) == 'D') { //SD command
+            if (gameStarted) {
+                setCommandLine(&commandLine, NOT_AVAILABLE, input);
+            } else {
+                char* parameter = NULL;
 
+                if (input[2] != '\n') {
+                    parameter = readParameter(input);
+                }
+                int loadResponse = saveDeckToFile(deck, parameter);
+                printf("%d", loadResponse);
+                if (loadResponse == 0) { // No error
+                    setCommandLine(&commandLine,OK,input);
+                }else{
+                    setCommandLine(&commandLine,SAVE_FILE_ERROR,input);
+                }
+            }
 
 
         } else if (toupper(input[0]) == 'Q' && toupper(input[1]) == 'Q') { //QQ command
@@ -404,7 +443,7 @@ void run_game() {
             setCommandLine(&commandLine, ERROR, input);
         }
 
-        clearScreen();
+        //clearScreen();
         print_board(&gameBoard, showAll);
         printCommandLine(&commandLine);
     }

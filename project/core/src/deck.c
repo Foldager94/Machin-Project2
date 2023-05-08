@@ -18,14 +18,16 @@ int load_deck(char filePath[], Card* deck) {
     if (filePath == NULL) {
         fp = fopen(defaultPath, "r");
     } else{
+        int len = strcspn(filePath, "\n");
+        if(filePath[len] == '\n') {
+            filePath[len] = '\0';
+        }
         fp = fopen(filePath, "r");
     }
-   
     //checks if the file is open correctly
     if (fp == NULL) {
         return -1;
     }
-
     char read[LINE_SIZE + 1];
 
     int cardCounter = 0;
@@ -241,6 +243,10 @@ int saveDeckToFile(Card *deck, char* fileName){
     if(fileName == NULL){
         fp = fopen("cards.txt", "w");
     } else{
+        int len = strcspn(fileName, "\n");
+        if(fileName[len] == '\n'){
+            fileName[len] = '\0';
+        }
         fp = fopen(fileName, "w");
     }
     if (fp == NULL) {
