@@ -81,6 +81,58 @@ bool checkWin (Board* gameboard) {
     return isWon;
 }
 
+Card* createKing (char suit) {
+    Card *newCard = (Card *) malloc(sizeof(Card));
+    newCard->isFlipped = true;
+    newCard->cardSuit = suit;
+    newCard->cardValue = 'K';
+
+    return newCard;
+}
+
+void autoComplete (Board* gameboard) {
+    for (int i = 0; i < 7; i++) {
+        clear_list(gameboard->columns[i]);
+    }
+
+    char suits[] = "SDHC";
+    char suitsUsed[] = "    ";
+
+    for (int i = 0; i < FOUNDATION_COUNT; i++) {
+        Card *current = gameboard->foundations[i]->previous;
+
+        if (current->cardSuit != ' ') {
+
+            char suit = current->cardSuit;
+
+            Card* newCard = createKing(suit);
+            insert_next_in_list(gameboard->foundations[i], newCard);
+
+            suitsUsed[i] = suit;
+
+            for (int i = 0; i < FOUNDATION_COUNT; i++) {
+                if (suits[i] == suit) {
+                    suits[i] = ' ';
+                }
+            }
+        }
+    }
+
+    for (int i = 0; i < FOUNDATION_COUNT; i++) {
+        if (suitsUsed[i] == ' ') {
+            for (int j = 0; j < FOUNDATION_COUNT; j++) {
+                if (suits[j] != ' ') {
+                    Card* newCard = createKing(suits[j]);
+                    insert_next_in_list(gameboard->foundations[i], newCard);
+                    suits[j] = ' ';
+                }
+            }
+        }
+    }
+}
+
+
+
 void run_game() {
     char NOT_AVAILABLE[] = "Command not available in the PLAY phase";
     char NO_DECK[] = "ERROR: No deck";
@@ -388,6 +440,35 @@ void run_game() {
                     }
                 }
             }
+        }else if (input[0] == 'A' && input[1] == 'U' && input[2] == 'T' && input[3] == 'O') {
+            bool notAbleToComplete = false;
+
+            for (int i = 0; i < 7; i++) {
+                Card* current = gameBoard.columns[i]->next;
+
+                if (!current->isFlipped) {
+                    notAbleToComplete = true;
+                    break;
+                }
+
+
+                while (current->next->cardValue != ' ') {
+                    int currentValue = ASCII_to_numeric(current->cardValue);
+                    int nextValue = ASCII_to_numeric(current->next->cardValue);
+
+                    if (currentValue - nextValue != 1) {
+                        notAbleToComplete = true;
+                    }
+                }
+            }
+
+            if (notAbleToComplete) {
+                setCommandLine(&commandLine, INVALID, input);
+            } else {
+                setCommandLine(&commandLine, OK, input);
+
+            }
+
         } else {
             setCommandLine(&commandLine, ERROR, input);
         }
