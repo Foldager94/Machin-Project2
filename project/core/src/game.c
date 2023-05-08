@@ -197,7 +197,8 @@ void run_game() {
                 shuffleDeck(deck, splitInt);
             } else {
                 //split specified
-
+                char* parameter = readParameter(input);
+                
             }
 
 
