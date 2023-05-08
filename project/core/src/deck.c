@@ -3,15 +3,17 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include <locale.h>
 #include "card.h"
 #define NUM_CARDS 52
 #define defaultPath "../project/core/src/unshuffled_deck.txt"
-#define stringSize 155
 #define LINE_SIZE 3
 
+#define ASCII_C 67
+#define ASCII_D 68
+#define ASCII_H 72
+#define ASCII_S 83
 
-Card* load_deck(char filePath[]){
+int load_deck(char filePath[], Card* deck) {
     FILE *fp;
     if (filePath == NULL) {
         fp = fopen(defaultPath, "r");
@@ -21,25 +23,50 @@ Card* load_deck(char filePath[]){
    
     //checks if the file is open correctly
     if (fp == NULL) {
-        return NULL;
+        return -1;
     }
 
-    Card* deck = init_list();
     char read[LINE_SIZE + 1];
 
+    int cardCounter = 0;
     while (!feof(fp)) {
         if (fgets (read, sizeof(read), fp) != NULL) {
+            cardCounter++;
+
             Card* card = (Card*) malloc(sizeof(Card));
-            card->cardValue = read[0];
-            card->cardSuit = read[1];
+            char value = read[0];
+            char suit = read[1];
+
+            if (!(suit == ASCII_C || suit == ASCII_D || suit == ASCII_H || suit == ASCII_S)) {
+                clear_list(deck);
+                free(deck);
+                return cardCounter;
+            }
+
+            int asciiValue = ASCII_to_numeric(value);
+            if (asciiValue < 1 || asciiValue > 13) {
+                clear_list(deck);
+                free(deck);
+                return cardCounter;
+            }
+
+            card->cardValue = value;
+            card->cardSuit = suit;
             card->isFlipped = false;
+
             insert_next_in_list(deck, card);
         }
     }
 
     fclose(fp);
 
-    return deck;
+    if (cardCounter != NUM_CARDS) {
+        clear_list(deck);
+        free(deck);
+        return cardCounter;
+    }
+
+    return 0;
 }
 
 int deckLength(Card* deck) {

@@ -140,10 +140,11 @@ void run_game() {
     char INVALID[] = "ERROR: Invalid move";
     char OK[] = "OK";
     char NO_FILE[] = "ERROR: File not found";
+    char INVALID_FILE[] = "ERROR: File is invalid. Error on line   ";
     char WINNER[] = "You win!!!";
 
     Board gameBoard;
-    Card* deck;
+    Card* deck = init_list();
     Card* deckCopy = init_list();
     CommandLine commandLine;
 
@@ -175,7 +176,7 @@ void run_game() {
         char command[30];
 
 
-        //Determening the input
+        //Determining the input
         if (input[0] == 'L' && input[1] == 'D') { //LD command
             if (gameStarted) {
                 setCommandLine(&commandLine, NOT_AVAILABLE, input);
@@ -185,8 +186,9 @@ void run_game() {
                 if (input[2] != '\n') {
                     parameter = readParameter(input);
                 }
-                deck = load_deck(parameter);
-                if (deck != NULL) {
+                clear_list(deck);
+                int loadResponse = load_deck(parameter, deck);
+                if (loadResponse == 0) { // No error
                     // Clear copy and board
                     clear_list(deckCopy);
                     for (int i = 0; i < COL_COUNT; i++) {
@@ -203,8 +205,19 @@ void run_game() {
                     deckLoaded = true;
 
                     setCommandLine(&commandLine, OK, input);
-                } else {
+                } else if (loadResponse == -1) { // File not found
                     setCommandLine(&commandLine, NO_FILE, input);
+                } else { // Line error
+                    if (loadResponse > 9) {
+                        int firstDigit = loadResponse / 10;
+                        int secondDigit = loadResponse % 10;
+                        INVALID_FILE[38] = (char)(firstDigit + '0');
+                        INVALID_FILE[39] = (char)(secondDigit + '0');
+                    } else {
+                        INVALID_FILE[38] = (char)(loadResponse + '0');
+                    }
+
+                    setCommandLine(&commandLine, INVALID_FILE, input);
                 }
             }
 
@@ -269,14 +282,12 @@ void run_game() {
 
 
         } else if (input[0] == 'Q' && input[1] == 'Q') { //QQ command
-            if (!gameStarted) {
+            isRunning = false;
+            /*if (!gameStarted) {
                 isRunning = false;
             } else {
                 setCommandLine(&commandLine,NOT_AVAILABLE,input);
-            }
-
-
-
+            }*/
         } else if (input[0] == 'P') { //P command
             if (input[1] == '\n') {
                 if (gameStarted) {
