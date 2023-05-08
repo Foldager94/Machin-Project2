@@ -34,7 +34,9 @@ bool validateMoveToFoundation (Card* toMove, Card* destination) {
     if (toMove->next->cardValue == ' ') {
         if (destination->cardValue == ' ' && toMove->cardValue == 'A') {
             return true;
-        } else if (destination->cardSuit == toMove->cardSuit && ASCII_to_numeric((int)destination->cardValue) - ASCII_to_numeric((int)toMove->cardValue) == -1 ) {
+        } else if (destination->cardSuit == toMove->cardSuit && asciiToNumeric((int) destination->cardValue) -
+                                                                asciiToNumeric(
+                                                                                                                                                       (int) toMove->cardValue) == -1 ) {
             return true;
         } else return false;
     } else return false;
@@ -44,7 +46,9 @@ bool validateMoveToFoundation (Card* toMove, Card* destination) {
 bool validateMoveToColumn (Card* toMove, Card* destination) {
     if (destination->cardValue == ' ' && toMove->cardValue == 'K') {
         return true;
-    } else if (destination->cardSuit != toMove->cardSuit && ASCII_to_numeric((int)destination->cardValue) - ASCII_to_numeric((int)toMove->cardValue) == 1 ) {
+    } else if (destination->cardSuit != toMove->cardSuit && asciiToNumeric((int) destination->cardValue) -
+                                                            asciiToNumeric(
+                                                                                                                                               (int) toMove->cardValue) == 1 ) {
         return true;
     } else return false;
 }
@@ -53,8 +57,8 @@ void moveSingleCard (Card* toMoveColumn, Card* destination) {
     Card* newLast = toMoveColumn->previous->previous;
     newLast->isFlipped = true;
 
-    Card* toMove = pop_last_in_list(toMoveColumn);
-    insert_next_in_list(destination->next, toMove);
+    Card* toMove = popLastInList(toMoveColumn);
+    insertNextInList(destination->next, toMove);
 }
 
 void moveListOfCards (Card* first, Card* fromDummy, Card* toDummy) {
@@ -63,16 +67,16 @@ void moveListOfCards (Card* first, Card* fromDummy, Card* toDummy) {
 
     Card* last = fromDummy->previous;
 
-    remove_list_in_list(fromDummy, first);
-    insert_list_in_list(toDummy,first,last);
+    removeListInList(fromDummy, first);
+    insertListInList(toDummy, first, last);
 }
 
-bool checkWin (Board* gameboard) {
+bool checkWin (Board* board) {
 
     bool isWon = true;
 
-    for (int i = 0; i < 7; i++) {
-        if (gameboard->columns[i]->previous->cardValue != ' ') {
+    for (int i = 0; i < COL_COUNT; i++) {
+        if (board->columns[i]->previous->cardValue != ' ') {
             isWon = false;
             break;
         }
@@ -91,8 +95,8 @@ Card* createKing (char suit) {
 }
 
 void autoComplete (Board* gameboard) {
-    for (int i = 0; i < 7; i++) {
-        clear_list(gameboard->columns[i]);
+    for (int i = 0; i < COL_COUNT; i++) {
+        clearList(gameboard->columns[i]);
     }
 
     char suits[] = "SDHC";
@@ -106,7 +110,7 @@ void autoComplete (Board* gameboard) {
             char suit = current->cardSuit;
 
             Card* newCard = createKing(suit);
-            insert_next_in_list(gameboard->foundations[i], newCard);
+            insertNextInList(gameboard->foundations[i], newCard);
 
             suitsUsed[i] = suit;
 
@@ -123,7 +127,7 @@ void autoComplete (Board* gameboard) {
             for (int j = 0; j < FOUNDATION_COUNT; j++) {
                 if (suits[j] != ' ') {
                     Card* newCard = createKing(suits[j]);
-                    insert_next_in_list(gameboard->foundations[i], newCard);
+                    insertNextInList(gameboard->foundations[i], newCard);
                     suits[j] = ' ';
                     break;
                 }
@@ -134,7 +138,7 @@ void autoComplete (Board* gameboard) {
 
 
 
-void run_game() {
+void runGame() {
     char NOT_AVAILABLE[] = "Command not available in the PLAY phase";
     char NOT_AVAILABLE_STARTUP[] = "Command not available in the STARTUP phase";
     char NO_DECK[] = "ERROR: No deck";
@@ -146,24 +150,24 @@ void run_game() {
     char WINNER[] = "You win!!!";
 
     Board gameBoard;
-    Card* deck = init_list();
-    Card* deckCopy = init_list();
+    Card* deck = initList();
+    Card* deckCopy = initList();
     CommandLine commandLine;
 
     //Initialize dummy elements
     for (int i = 0; i < COL_COUNT; i++) {
-        gameBoard.columns[i] = init_list();
+        gameBoard.columns[i] = initList();
     }
 
     for (int i = 0; i < FOUNDATION_COUNT; i++) {
-        gameBoard.foundations[i] = init_list();
+        gameBoard.foundations[i] = initList();
     }
 
     //Initialize commands
     commandLine.command[0] = ' ';
     commandLine.message[0] = ' ';
 
-    print_board(&gameBoard, false);
+    printBoard(&gameBoard, false);
     printCommandLine(&commandLine);
 
     bool isRunning = true;
@@ -175,9 +179,6 @@ void run_game() {
         char input[101];
         fgets(input,sizeof(input),stdin);
 
-        char command[30];
-
-
         //Determining the input
         if (input[0] == 'L' && input[1] == 'D') { //LD command
             if (gameStarted) {
@@ -188,21 +189,21 @@ void run_game() {
                 if (input[2] != '\n') {
                     parameter = readParameter(input);
                 }
-                clear_list(deck);
+                clearList(deck);
                 int loadResponse = load_deck(parameter, deck);
                 if (loadResponse == 0) { // No error
                     // Clear copy and board
-                    clear_list(deckCopy);
+                    clearList(deckCopy);
                     for (int i = 0; i < COL_COUNT; i++) {
-                        clear_list(gameBoard.columns[i]);
+                        clearList(gameBoard.columns[i]);
                         if (i < FOUNDATION_COUNT) {
-                            clear_list(gameBoard.foundations[i]);
+                            clearList(gameBoard.foundations[i]);
                         }
                     }
 
                     // Make copy and place it
-                    make_copy(deck, deckCopy);
-                    place_deck(&gameBoard, deckCopy);
+                    makeCopy(deck, deckCopy);
+                    placeDeck(&gameBoard, deckCopy);
 
                     deckLoaded = true;
 
@@ -237,17 +238,17 @@ void run_game() {
                     } else {
                         setCommandLine(&commandLine, OK, input);
                         // Clear copy and board
-                        clear_list(deckCopy);
+                        clearList(deckCopy);
                         for (int i = 0; i < COL_COUNT; i++) {
-                            clear_list(gameBoard.columns[i]);
+                            clearList(gameBoard.columns[i]);
                             if (i < FOUNDATION_COUNT) {
-                                clear_list(gameBoard.foundations[i]);
+                                clearList(gameBoard.foundations[i]);
                             }
                         }
 
                         // Make copy and place it
-                        make_copy(deck, deckCopy);
-                        place_deck(&gameBoard, deckCopy);
+                        makeCopy(deck, deckCopy);
+                        placeDeck(&gameBoard, deckCopy);
                         showAll = true;
                     }
                 } else {
@@ -285,12 +286,11 @@ void run_game() {
 
 
         } else if (input[0] == 'Q' && input[1] == 'Q') { //QQ command
-            isRunning = false;
-            /*if (!gameStarted) {
+            if (!gameStarted) {
                 isRunning = false;
             } else {
                 setCommandLine(&commandLine,NOT_AVAILABLE,input);
-            }*/
+            }
         } else if (input[0] == 'P') { //P command
             if (input[1] == '\n') {
                 if (gameStarted) {
@@ -303,17 +303,17 @@ void run_game() {
                         gameStarted = true;
 
                         // Clear copy and board
-                        clear_list(deckCopy);
+                        clearList(deckCopy);
                         for (int i = 0; i < COL_COUNT; i++) {
-                            clear_list(gameBoard.columns[i]);
+                            clearList(gameBoard.columns[i]);
                             if (i < FOUNDATION_COUNT) {
-                                clear_list(gameBoard.foundations[i]);
+                                clearList(gameBoard.foundations[i]);
                             }
                         }
 
                         // Make copy and deal cards
-                        make_copy(deck, deckCopy);
-                        deal_cards(&gameBoard, deckCopy);
+                        makeCopy(deck, deckCopy);
+                        dealCards(&gameBoard, deckCopy);
                         setCommandLine(&commandLine, OK, input);
                     }
                 }
@@ -329,17 +329,17 @@ void run_game() {
                     gameStarted = false;
 
                     // Clear copy and board
-                    clear_list(deckCopy);
+                    clearList(deckCopy);
                     for (int i = 0; i < COL_COUNT; i++) {
-                        clear_list(gameBoard.columns[i]);
+                        clearList(gameBoard.columns[i]);
                         if (i < FOUNDATION_COUNT) {
-                            clear_list(gameBoard.foundations[i]);
+                            clearList(gameBoard.foundations[i]);
                         }
                     }
 
                     // Make copy and place it
-                    make_copy(deck, deckCopy);
-                    place_deck(&gameBoard, deckCopy);
+                    makeCopy(deck, deckCopy);
+                    placeDeck(&gameBoard, deckCopy);
 
                     setCommandLine(&commandLine, OK, input);
                 } else {
@@ -359,17 +359,17 @@ void run_game() {
                 setCommandLine(&commandLine, ERROR, input);
 
                 if (validateColumn(input[1])) {
-                    Card *fromColumn = gameBoard.columns[ASCII_to_numeric((int) input[1]) -
+                    Card *fromColumn = gameBoard.columns[asciiToNumeric((int) input[1]) -
                                                          1];         //Save the column to move from
 
                     if (input[2] == ':') {
-                        Card *toMove = find_card(fromColumn, input[3], input[4]);
+                        Card *toMove = findCard(fromColumn, input[3], input[4]);
 
                         if (toMove->cardValue != ' ') {
                             if (input[5] == '-' && input[6] == '>') {
                                 if (input[7] == 'F') {
                                     if (validateFoundation(input[8])) {
-                                        Card *destination = gameBoard.foundations[ASCII_to_numeric((int) input[8]) -
+                                        Card *destination = gameBoard.foundations[asciiToNumeric((int) input[8]) -
                                                                                   1]->previous;
 
                                         if (validateMoveToFoundation(toMove, destination)) {
@@ -387,8 +387,7 @@ void run_game() {
                                     }
                                 } else if (input[7] == 'C') {
                                     if (validateColumn(input[8])) {
-                                        Card *destination = gameBoard.columns[ASCII_to_numeric((int) input[8]) -
-                                                                              1]->previous;
+                                        Card *destination = gameBoard.columns[asciiToNumeric((int) input[8]) - 1]->previous;
 
                                         //Validate move
                                         if (validateMoveToColumn(toMove, destination)) {
@@ -407,8 +406,7 @@ void run_game() {
                         if (input[2] == '-' && input[3] == '>') {
                             if (input[4] == 'F') {
                                 if (validateFoundation(input[5])) {
-                                    Card *destination = gameBoard.foundations[ASCII_to_numeric((int) input[5]) -
-                                                                              1]->previous;
+                                    Card *destination = gameBoard.foundations[asciiToNumeric((int) input[5]) - 1]->previous;
 
                                     if (validateMoveToFoundation(fromColumn->previous, destination)) {
                                         moveSingleCard(fromColumn, destination);
@@ -425,8 +423,7 @@ void run_game() {
                                 }
                             } else if (input[4] == 'C') {
                                 if (validateColumn(input[5])) {
-                                    Card *destination = gameBoard.columns[ASCII_to_numeric((int) input[5]) -
-                                                                          1]->previous;
+                                    Card *destination = gameBoard.columns[asciiToNumeric((int) input[5]) - 1]->previous;
 
                                     if (validateMoveToColumn(fromColumn->previous, destination)) {
                                         moveSingleCard(fromColumn, destination);
@@ -440,11 +437,7 @@ void run_game() {
                     }
                 }
             }
-
-
-
-
-        } else if (input[0] == 'F') { //Move from faundation
+        } else if (input[0] == 'F') { //Move from foundation
             if (!gameStarted) {
                 setCommandLine(&commandLine, NOT_AVAILABLE_STARTUP, input);
             } else {
@@ -452,12 +445,12 @@ void run_game() {
                 setCommandLine(&commandLine, ERROR, input);
 
                 if (validateFoundation(input[1])) {
-                    Card *fromColumn = gameBoard.foundations[ASCII_to_numeric((int) input[1]) - 1];
+                    Card *fromColumn = gameBoard.foundations[asciiToNumeric((int) input[1]) - 1];
 
                     if (input[2] == '-' && input[3] == '>') {
                         if (input[4] == 'C' && validateColumn(input[5])) {
-                            Card *toMove = gameBoard.foundations[ASCII_to_numeric((int) input[1]) - 1]->previous;
-                            Card *destination = gameBoard.columns[ASCII_to_numeric((int) input[5]) - 1]->previous;
+                            Card *toMove = gameBoard.foundations[asciiToNumeric((int) input[1]) - 1]->previous;
+                            Card *destination = gameBoard.columns[asciiToNumeric((int) input[5]) - 1]->previous;
 
                             //Check if piles are empty
                             if (validateMoveToColumn(toMove, destination)) {
@@ -469,13 +462,10 @@ void run_game() {
                     }
                 }
             }
-
-
-
         }else if (input[0] == 'A' && input[1] == 'U' && input[2] == 'T' && input[3] == 'O') {
             bool notAbleToComplete = false;
 
-            for (int i = 0; i < 7; i++) {
+            for (int i = 0; i < COL_COUNT; i++) {
                 Card* current = gameBoard.columns[i]->next;
 
                 if (!current->isFlipped) {
@@ -485,8 +475,8 @@ void run_game() {
 
 
                 while (current->next->cardValue != ' ') {
-                    int currentValue = ASCII_to_numeric(current->cardValue);
-                    int nextValue = ASCII_to_numeric(current->next->cardValue);
+                    int currentValue = asciiToNumeric(current->cardValue);
+                    int nextValue = asciiToNumeric(current->next->cardValue);
 
                     if (currentValue - nextValue != 1) {
                         notAbleToComplete = true;
@@ -509,7 +499,7 @@ void run_game() {
         }
 
         clearScreen();
-        print_board(&gameBoard, showAll);
+        printBoard(&gameBoard, showAll);
         printCommandLine(&commandLine);
     }
 }
