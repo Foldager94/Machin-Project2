@@ -130,40 +130,25 @@ void print_board(Board* board, bool showAll) {
 
 
 }
-void make_board_copy(Board* source, Board* dest) {
+ Board make_board_copy(Board* source) {
+
+    Board newBoard;
+
+
     // Copy columns
     for (int i = 0; i < COL_COUNT; i++) {
-        Card* column_source = source->columns[i]->next;
-        Card* column_dest = dest->columns[i];
+        Card* temp_card = source ->columns[i];
+        make_copy(temp_card, newBoard.columns[i]);
 
-        while (column_source->cardValue != ' ') {
-            Card* new_card = (Card *)malloc(sizeof(Card));
-            *new_card = *column_source;
-            new_card->next = NULL;
-            new_card->previous = NULL;
-
-            insert_next_in_list(column_dest, new_card);
-
-            column_source = column_source->next;
-            column_dest = column_dest->next;
-        }
     }
 
     // Copy foundations
     for (int i = 0; i < FOUNDATION_COUNT; i++) {
-        Card* foundation_source = source->foundations[i]->next;
-        Card* foundation_dest = dest->foundations[i];
 
-        while (foundation_source->cardValue != ' ') {
-            Card* new_card = (Card *)malloc(sizeof(Card));
-            *new_card = *foundation_source;
-            new_card->next = NULL;
-            new_card->previous = NULL;
+        Card* temp_card = source ->foundations[i];
+        make_copy(temp_card, newBoard.foundations[i]);
 
-            insert_next_in_list(foundation_dest, new_card);
 
-            foundation_source = foundation_source->next;
-            foundation_dest = foundation_dest->next;
-        }
     }
+    return newBoard;
 }

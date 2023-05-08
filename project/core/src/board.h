@@ -14,5 +14,6 @@ typedef struct board {
 extern void deal_cards(Board* board, Card* deck);
 extern void print_board(Board* board, bool showAll);
 extern void place_deck(Board* board, Card* deck);
+extern Board make_board_copy(Board* source);
 
 #endif

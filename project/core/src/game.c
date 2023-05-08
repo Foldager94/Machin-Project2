@@ -123,7 +123,7 @@ void run_game() {
         char command[30];
 
 
-        //Determening the input
+        //Determining the input
         if (input[0] == 'L' && input[1] == 'D') { //LD command
             if (gameStarted) {
                 setCommandLine(&commandLine, NOT_AVAILABLE, input);
@@ -154,6 +154,7 @@ void run_game() {
                 } else {
                     setCommandLine(&commandLine, NO_FILE, input);
                 }
+                make_board_copy(&gameBoard);
             }
 
 
