@@ -5,7 +5,7 @@
 #include "deck.h"
 #include <stdbool.h>
 #include <stdlib.h>
-
+#include <ctype.h>
 
 #define COL_COUNT 7
 #define FOUNDATION_COUNT 4
@@ -125,7 +125,7 @@ void run_game() {
 
 
         //Determining the input
-        if (input[0] == 'L' && input[1] == 'D') { //LD command
+        if (toupper(input[0]) == 'L' && toupper(input[1]) == 'D') { //LD command
             if (gameStarted) {
                 setCommandLine(&commandLine, NOT_AVAILABLE, input);
             } else {
@@ -171,7 +171,7 @@ void run_game() {
 
 
 
-        } else if (input[0] == 'S' && input[1] == 'W') { //SW command
+        } else if (toupper(input[0]) == 'S' && toupper(input[1]) == 'W') { //SW command
 
             if (gameStarted) {
                 setCommandLine(&commandLine, NOT_AVAILABLE, input);
@@ -202,7 +202,7 @@ void run_game() {
 
 
 
-        } else if (input[0] == 'S' && input[1] == 'I') { //SI command
+        } else if (toupper(input[0]) == 'S' && toupper(input[1]) == 'I') { //SI command
             int splitInt;
             if (input[2] == '\0') {
                 //No split specified
@@ -216,7 +216,7 @@ void run_game() {
 
 
 
-        } else if (input[0] == 'S' && input[1] == 'R') { //SR command
+        } else if (toupper(input[0]) == 'S' && toupper(input[1]) == 'R') { //SR command
             if (!gameStarted) {
                 shuffleDeckRandom(deck);
                 setCommandLine(&commandLine,OK,input);
@@ -226,18 +226,18 @@ void run_game() {
 
 
 
-        } else if (input[0] == 'S' && input[1] == 'D') { //SD command
+        } else if (toupper(input[0]) == 'S' && toupper(input[1]) == 'D') { //SD command
 
 
 
-        } else if (input[0] == 'Q' && input[1] == 'Q') { //QQ command
+        } else if (toupper(input[0]) == 'Q' && toupper(input[1]) == 'Q') { //QQ command
             isRunning = false;
             /*if (!gameStarted) {
                 isRunning = false;
             } else {
                 setCommandLine(&commandLine,NOT_AVAILABLE,input);
             }*/
-        } else if (input[0] == 'P') { //P command
+        } else if (toupper(input[0]) == 'P') { //P command
             if (input[1] == '\n') {
                 if (gameStarted) {
                     setCommandLine(&commandLine, NOT_AVAILABLE, input);
@@ -269,7 +269,7 @@ void run_game() {
 
 
 
-        } else if (input[0] == 'Q') {
+        } else if (toupper(input[0]) == 'Q') {
             if (input[1] == '\n') {
                 if (gameStarted) {
                     gameStarted = false;
@@ -297,7 +297,7 @@ void run_game() {
 
 
 
-        } else if (input[0] == 'C' ) { //Move command
+        } else if (toupper(input[0]) == 'C' ) { //Move command
             //Set defealt command and message
             setCommandLine(&commandLine, ERROR, input);
 
@@ -305,11 +305,11 @@ void run_game() {
                 Card* fromColumn = gameBoard.columns[ASCII_to_numeric((int) input[1])-1];         //Save the column to move from
 
                 if (input[2] == ':'){
-                    Card* toMove = find_card(fromColumn, input[3], input[4]);
+                    Card* toMove = find_card(fromColumn, toupper(input[3]), input[4]);
 
                     if (toMove->cardValue != ' ') {
                         if (input[5] == '-' && input[6] == '>') {
-                            if (input[7] == 'F') {
+                            if (toupper(input[7]) == 'F') {
                                 if (validateFoundation(input[8])) {
                                     Card* destination = gameBoard.foundations[ASCII_to_numeric((int) input[8])-1]->previous;
 
@@ -325,7 +325,7 @@ void run_game() {
                                         setCommandLine(&commandLine, INVALID, input);
                                     }
                                 }
-                            } else if (input[7] == 'C') {
+                            } else if (toupper(input[7]) == 'C') {
                                 if (validateColumn(input[8])) {
                                     Card* destination = gameBoard.columns[ASCII_to_numeric((int) input[8])-1]->previous;
 
@@ -344,7 +344,7 @@ void run_game() {
                     }
                 } else {
                     if (input[2] == '-' && input[3] == '>') {
-                        if (input[4] == 'F') {
+                        if (toupper(input[4]) == 'F') {
                             if (validateFoundation(input[5])) {
                                 Card* destination = gameBoard.foundations[ASCII_to_numeric((int) input[5])-1]->previous;
 
@@ -360,7 +360,7 @@ void run_game() {
                                     setCommandLine(&commandLine, INVALID, input);
                                 }
                             }
-                        } else if (input[4] == 'C') {
+                        } else if (toupper(input[4]) == 'C') {
                             if (validateColumn(input[5])) {
                                 Card* destination = gameBoard.columns[ASCII_to_numeric((int) input[5])-1]->previous;
 
@@ -379,7 +379,7 @@ void run_game() {
 
 
 
-        } else if (input[0] == 'F') { //Move from faundation
+        } else if (toupper(input[0]) == 'F') { //Move from faundation
             //Set defealt command and message
             setCommandLine(&commandLine, ERROR, input);
 
@@ -387,7 +387,7 @@ void run_game() {
                 Card*  fromColumn = gameBoard.foundations[ASCII_to_numeric((int) input[1])-1];
 
                 if (input[2] == '-' && input[3] == '>') {
-                    if (input[4] == 'C' && validateColumn(input[5])) {
+                    if (toupper(input[4]) == 'C' && validateColumn(input[5])) {
                         Card* toMove = gameBoard.foundations[ASCII_to_numeric((int) input[1])-1]->previous;
                         Card* destination = gameBoard.columns[ASCII_to_numeric((int) input[5])-1]->previous;
 
