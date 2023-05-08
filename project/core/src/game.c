@@ -403,11 +403,11 @@ void runGame() {
                                                          1];         //Save the column to move from
 
                     if (input[2] == ':') {
-                        Card *toMove = findCard(fromColumn, input[3], input[4]);
+                        Card *toMove = findCard(fromColumn, toupper(input[3]), toupper(input[4]));
 
                         if (toMove->cardValue != ' ') {
                             if (input[5] == '-' && input[6] == '>') {
-                                if (input[7] == 'F') {
+                                if (toupper(input[7]) == 'F') {
                                     if (validateFoundation(input[8])) {
                                         Card *destination = gameBoard.foundations[asciiToNumeric((int) input[8]) -
                                                                                   1]->previous;
@@ -425,7 +425,7 @@ void runGame() {
                                             setCommandLine(&commandLine, INVALID, input);
                                         }
                                     }
-                                } else if (input[7] == 'C') {
+                                } else if (toupper(input[7]) == 'C') {
                                     if (validateColumn(input[8])) {
                                         Card *destination = gameBoard.columns[asciiToNumeric((int) input[8]) - 1]->previous;
 
@@ -444,7 +444,7 @@ void runGame() {
                         }
                     } else {
                         if (input[2] == '-' && input[3] == '>') {
-                            if (input[4] == 'F') {
+                            if (toupper(input[4]) == 'F') {
                                 if (validateFoundation(input[5])) {
                                     Card *destination = gameBoard.foundations[asciiToNumeric((int) input[5]) - 1]->previous;
 
@@ -461,7 +461,7 @@ void runGame() {
                                         setCommandLine(&commandLine, INVALID, input);
                                     }
                                 }
-                            } else if (input[4] == 'C') {
+                            } else if (toupper(input[4]) == 'C') {
                                 if (validateColumn(input[5])) {
                                     Card *destination = gameBoard.columns[asciiToNumeric((int) input[5]) - 1]->previous;
 
