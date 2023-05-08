@@ -34,9 +34,7 @@ bool validateMoveToFoundation (Card* toMove, Card* destination) {
     if (toMove->next->cardValue == ' ') {
         if (destination->cardValue == ' ' && toMove->cardValue == 'A') {
             return true;
-        } else if (destination->cardSuit == toMove->cardSuit && asciiToNumeric((int) destination->cardValue) -
-                                                                asciiToNumeric(
-                                                                                                                                                       (int) toMove->cardValue) == -1 ) {
+        } else if (destination->cardSuit == toMove->cardSuit && asciiToNumeric((int) destination->cardValue) - asciiToNumeric((int) toMove->cardValue) == -1 ) {
             return true;
         } else return false;
     } else return false;
@@ -46,9 +44,7 @@ bool validateMoveToFoundation (Card* toMove, Card* destination) {
 bool validateMoveToColumn (Card* toMove, Card* destination) {
     if (destination->cardValue == ' ' && toMove->cardValue == 'K') {
         return true;
-    } else if (destination->cardSuit != toMove->cardSuit && asciiToNumeric((int) destination->cardValue) -
-                                                            asciiToNumeric(
-                                                                                                                                               (int) toMove->cardValue) == 1 ) {
+    } else if (destination->cardSuit != toMove->cardSuit && asciiToNumeric((int) destination->cardValue) - asciiToNumeric((int) toMove->cardValue) == 1 ) {
         return true;
     } else return false;
 }
@@ -94,29 +90,29 @@ Card* createKing (char suit) {
     return newCard;
 }
 
-void autoComplete (Board* gameboard) {
+void autoComplete (Board* board) {
     for (int i = 0; i < COL_COUNT; i++) {
-        clearList(gameboard->columns[i]);
+        clearList(board->columns[i]);
     }
 
     char suits[] = "SDHC";
     char suitsUsed[] = "    ";
 
     for (int i = 0; i < FOUNDATION_COUNT; i++) {
-        Card *current = gameboard->foundations[i]->previous;
+        Card *current = board->foundations[i]->previous;
 
         if (current->cardSuit != ' ') {
 
             char suit = current->cardSuit;
 
             Card* newCard = createKing(suit);
-            insertNextInList(gameboard->foundations[i], newCard);
+            insertNextInList(board->foundations[i], newCard);
 
             suitsUsed[i] = suit;
 
-            for (int i = 0; i < FOUNDATION_COUNT; i++) {
-                if (suits[i] == suit) {
-                    suits[i] = ' ';
+            for (int j = 0; j < FOUNDATION_COUNT; j++) {
+                if (suits[j] == suit) {
+                    suits[j] = ' ';
                 }
             }
         }
@@ -127,7 +123,7 @@ void autoComplete (Board* gameboard) {
             for (int j = 0; j < FOUNDATION_COUNT; j++) {
                 if (suits[j] != ' ') {
                     Card* newCard = createKing(suits[j]);
-                    insertNextInList(gameboard->foundations[i], newCard);
+                    insertNextInList(board->foundations[i], newCard);
                     suits[j] = ' ';
                     break;
                 }
@@ -192,7 +188,7 @@ void runGame() {
                     parameter = readParameter(input);
                 }
                 clearList(deck);
-                int loadResponse = load_deck(parameter, deck);
+                int loadResponse = loadDeck(parameter, deck);
                 if (loadResponse == 0) { // No error
                     // Clear copy and board
                     clearList(deckCopy);
@@ -226,11 +222,7 @@ void runGame() {
                     setCommandLine(&commandLine, INVALID_FILE, input);
                 }
             }
-
-
-
-        }else if (toupper(input[0]) == 'S' && toupper(input[1]) == 'W') { //SW command
-
+        } else if (toupper(input[0]) == 'S' && toupper(input[1]) == 'W') { //SW command
             if (gameStarted) {
                 setCommandLine(&commandLine, NOT_AVAILABLE, input);
             } else {
@@ -257,9 +249,6 @@ void runGame() {
                     setCommandLine(&commandLine, ERROR, input);
                 }
             }
-
-
-
         }else if (toupper(input[0]) == 'S' && toupper(input[1]) == 'I') { //SI command
             int splitInt;
             if (input[2] == '\n') {
@@ -290,12 +279,7 @@ void runGame() {
                 }else {
                     setCommandLine(&commandLine,SPLIT_ERROR,input);
                 }
-
-
             }
-
-
-
         }else if (toupper(input[0]) == 'S' && toupper(input[1]) == 'R') { //SR command
             if (!gameStarted) {
                 shuffleDeckRandom(deck);
@@ -303,9 +287,6 @@ void runGame() {
             } else {
                 setCommandLine(&commandLine,NOT_AVAILABLE,input);
             }
-
-
-
         }else if (toupper(input[0]) == 'S' && toupper(input[1]) == 'D') { //SD command
             if (gameStarted) {
                 setCommandLine(&commandLine, NOT_AVAILABLE, input);
@@ -316,15 +297,12 @@ void runGame() {
                     parameter = readParameter(input);
                 }
                 int loadResponse = saveDeckToFile(deck, parameter);
-                printf("%d", loadResponse);
                 if (loadResponse == 0) { // No error
                     setCommandLine(&commandLine,OK,input);
                 }else{
                     setCommandLine(&commandLine,SAVE_FILE_ERROR,input);
                 }
             }
-
-
         }else if (toupper(input[0]) == 'Q' && toupper(input[1]) == 'Q') { //QQ command
             if (!gameStarted) {
                 isRunning = false;
@@ -360,9 +338,6 @@ void runGame() {
             } else {
                 setCommandLine(&commandLine, ERROR, input);
             }
-
-
-
         }else if (toupper(input[0]) == 'Q') {
             if (input[1] == '\n') {
                 if (gameStarted) {
