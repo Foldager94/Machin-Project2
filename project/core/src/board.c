@@ -7,7 +7,7 @@
 #define COL_COUNT 7
 #define FOUNDATION_COUNT 4
 
-void deal_cards(Board* board, Card* deck) {
+void dealCards(Board* board, Card* deck) {
     // First card goes in the first column
     deck->isFlipped = true;
 
@@ -15,7 +15,7 @@ void deal_cards(Board* board, Card* deck) {
     Card* nextCard = current->next;
 
     current->isFlipped = true;
-    insert_next_in_list(board->columns[0], current);
+    insertNextInList(board->columns[0], current);
 
     current = nextCard;
     nextCard = current->next;
@@ -24,7 +24,7 @@ void deal_cards(Board* board, Card* deck) {
         for (int j = 1; j < i; j++) {
             // Deal the open cards
             current->isFlipped = true;
-            insert_next_in_list(board->columns[j], current);
+            insertNextInList(board->columns[j], current);
 
             current = nextCard;
             nextCard = current->next;
@@ -32,7 +32,7 @@ void deal_cards(Board* board, Card* deck) {
 
         for (int k = i; k < 7; k++) {
             // Deal the closed cards
-            insert_next_in_list(board->columns[k], current);
+            insertNextInList(board->columns[k], current);
 
             current = nextCard;
             nextCard = current->next;
@@ -43,7 +43,7 @@ void deal_cards(Board* board, Card* deck) {
         for (int j = i; j < 7; j++) {
             // Deal remaining open cards in diagonal
             current->isFlipped = true;
-            insert_next_in_list(board->columns[j], current);
+            insertNextInList(board->columns[j], current);
 
             current = nextCard;
             nextCard = current->next;
@@ -52,18 +52,18 @@ void deal_cards(Board* board, Card* deck) {
 
     // Last open card in the last column
     current->isFlipped = true;
-    insert_next_in_list(board->columns[6], current);
+    insertNextInList(board->columns[6], current);
 
     deck->next = deck;
     deck->previous = deck;
 }
 
-void place_deck(Board* board, Card* deck) {
+void placeDeck(Board* board, Card* deck) {
     Card* current = deck->next;
     Card* nextCard = current->next;
     for (int i = 0; i < DECK_SIZE; i++) {
         int currentColumn = i % COL_COUNT;
-        insert_next_in_list(board->columns[currentColumn], current);
+        insertNextInList(board->columns[currentColumn], current);
         current = nextCard;
         nextCard = current->next;
     }
@@ -73,7 +73,7 @@ void place_deck(Board* board, Card* deck) {
 }
 
 //Print the board with the current cards
-void print_board(Board* board, bool showAll) {
+void printBoard(Board* board, bool showAll) {
     printf("C1\tC2\tC3\tC4\tC5\tC6\tC7\t\t\n\n");
 
     int emptyCounter = 0;

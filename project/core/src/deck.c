@@ -40,14 +40,14 @@ int load_deck(char filePath[], Card* deck) {
             char suit = read[1];
 
             if (!(suit == ASCII_C || suit == ASCII_D || suit == ASCII_H || suit == ASCII_S)) {
-                clear_list(deck);
+                clearList(deck);
                 free(deck);
                 return cardCounter;
             }
 
-            int asciiValue = ASCII_to_numeric(value);
+            int asciiValue = asciiToNumeric(value);
             if (asciiValue < 1 || asciiValue > 13) {
-                clear_list(deck);
+                clearList(deck);
                 free(deck);
                 return cardCounter;
             }
@@ -56,14 +56,14 @@ int load_deck(char filePath[], Card* deck) {
             card->cardSuit = suit;
             card->isFlipped = false;
 
-            insert_next_in_list(deck, card);
+            insertNextInList(deck, card);
         }
     }
 
     fclose(fp);
 
     if (cardCounter != NUM_CARDS) {
-        clear_list(deck);
+        clearList(deck);
         free(deck);
         return cardCounter;
     }
@@ -86,8 +86,8 @@ int deckLength(Card* deck) {
 
 int shuffleDeck(Card* deck, int split){
 
-    Card *pileOne = init_list();
-    Card *pileTwo = init_list();
+    Card *pileOne = initList();
+    Card *pileTwo = initList();
     Card* currentCard = deck->next;
 
     //Divide the deck in to to piles based on split value
@@ -165,7 +165,7 @@ int shuffleDeck(Card* deck, int split){
 
 int shuffleDeckRandom(Card* deck){
     int deckSize = deckLength(deck);
-    Card *unshuffledDeck = init_list();
+    Card *unshuffledDeck = initList();
     unshuffledDeck->next = deck->next;
     unshuffledDeck->previous = deck->previous;
 
