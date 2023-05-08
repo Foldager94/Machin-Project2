@@ -10,7 +10,7 @@ const int CARD_Q = 81;
 const int CARD_K = 75;
 
 //Convert ASCII to numeric values including edge cases for A,T,Q,K as 1,10,11,12,13
-int ASCII_to_numeric(int cardValue) {
+int asciiToNumeric(int cardValue) {
     if (cardValue == CARD_A) {
         return 1;
     } else if (cardValue == CARD_T) {
@@ -37,7 +37,7 @@ int randomNumber(int max){
 };
 
 //Go through a column and search for a specific card if the card exists and is flipped it is return else dummy is returned
-Card* find_card(Card* dummy, char thisCardValue, char thisCardSuit ) {
+Card* findCard(Card* dummy, char thisCardSuit, char thisCardValue ) {
     Card* returnCard = dummy;
     Card* current = dummy;
 
@@ -51,7 +51,7 @@ Card* find_card(Card* dummy, char thisCardValue, char thisCardSuit ) {
             moreCards = false;
             break;
         } else {
-            if (current->cardValue == thisCardValue && current->cardSuit == thisCardSuit) {
+            if (current->cardValue == thisCardSuit && current->cardSuit == thisCardValue) {
                 returnCard = current;
                 moreCards = false;
                 break;
@@ -62,7 +62,7 @@ Card* find_card(Card* dummy, char thisCardValue, char thisCardSuit ) {
 }
 
 
-void insert_next_in_list(Card* dummy, Card* new) {
+void insertNextInList(Card* dummy, Card* new) {
     Card *prevPtr = dummy->previous;
     prevPtr->next = new;
     new->next = dummy;
@@ -71,7 +71,7 @@ void insert_next_in_list(Card* dummy, Card* new) {
 }
 
 // Insert linked list of cards into the bottom of exists linked list (game logic)
-void insert_list_in_list(Card* dummy, Card* first, Card* last) {
+void insertListInList(Card* dummy, Card* first, Card* last) {
     Card *prevPtr = dummy->previous;
     prevPtr->next = first;
     last->next = dummy;
@@ -79,8 +79,8 @@ void insert_list_in_list(Card* dummy, Card* first, Card* last) {
     dummy->previous = last;
 }
 
-// Removes all cards from the bottom of the list to the selected target (use with insert_list_in_list to perform a move)
-void remove_list_in_list(Card* dummy, Card* target) {
+// Removes all cards from the bottom of the list to the selected target (use with insertListInList to perform a move)
+void removeListInList(Card* dummy, Card* target) {
     Card* new_last = dummy->previous;
     while (new_last != target && new_last != dummy) {
         new_last = new_last->previous;
@@ -99,7 +99,7 @@ void remove_list_in_list(Card* dummy, Card* target) {
     }
 }
 
-Card* init_list() {
+Card* initList() {
     Card *dummy = (Card*)malloc(sizeof(Card));
     dummy->isFlipped = false;
     dummy->cardSuit = ' ';
@@ -111,7 +111,7 @@ Card* init_list() {
 
 // Clear all elements in the linked list
 // This will also free the memory allocated
-void clear_list(Card* dummy) {
+void clearList(Card* dummy) {
     Card* previousPtr = dummy->previous;
     while (previousPtr->cardValue != ' ') {
         Card* prevPreviousPtr = previousPtr->previous;
@@ -125,7 +125,7 @@ void clear_list(Card* dummy) {
 
 // Pop the last card pushed into the linked list (use for game logic)
 // This function does not free any memory, but removes the links in the linked list and returns the pointer to the card
-Card* pop_last_in_list(Card* dummy) {
+Card* popLastInList(Card* dummy) {
     Card* popped = dummy->previous;
 
     // Check if the list is empty
@@ -147,8 +147,8 @@ Card* pop_last_in_list(Card* dummy) {
     return popped;
 }
 
-// Creates a copy of a given card linked list in source to destination (destination should be after init_list)
-void make_copy(Card* source, Card* destination) {
+// Creates a copy of a given card linked list in source to destination (destination should be after initList)
+void makeCopy(Card* source, Card* destination) {
     Card* current = source->next;
     while (current->cardValue != ' ') {
         Card* copy = (Card*) malloc(sizeof(Card));
@@ -157,7 +157,7 @@ void make_copy(Card* source, Card* destination) {
         copy->isFlipped = current->isFlipped;
         copy->previous = NULL;
         copy->next = NULL;
-        insert_next_in_list(destination, copy);
+        insertNextInList(destination, copy);
         current = current->next;
     }
 }
