@@ -13,7 +13,7 @@
 #define ASCII_H 72
 #define ASCII_S 83
 
-int load_deck(char filePath[], Card* deck) {
+int loadDeck(char filePath[], Card* deck) {
     FILE *fp;
     if (filePath == NULL) {
         fp = fopen(defaultPath, "r");
