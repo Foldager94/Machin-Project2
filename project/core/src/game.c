@@ -523,13 +523,10 @@ void runGame() {
                 gameStarted = !checkWin(&gameBoard);
             }
         }else if (toupper(input[0]) == 'U' && toupper(input[1]) == 'N' && toupper(input[2]) == 'D' && toupper(input[3]) == 'O') {
-                if () {
+
                 gameStateCounter++;
                 changeGameState(&gameBoard, gameState, gameStateCounter);
                 setCommandLine(&commandLine, OK, input);
-        } else {
-                    setCommandLine(&commandLine, ERROR, input);
-                }
 
 
         }else if (toupper(input[0]) == 'R' && toupper(input[1]) == 'E' && toupper(input[2]) == 'D' && toupper(input[3]) == 'O') {
