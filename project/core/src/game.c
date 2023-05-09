@@ -147,6 +147,8 @@ void runGame() {
     char WINNER[] = "You win!!!";
     char SPLIT_ERROR[] = "ERROR: Split must be between 1 - 52";
     char SAVE_FILE_ERROR[]= "ERROR: Could not save the deck";
+    char UNDO_INVALID[]= "Undo not available";
+    char REDO_INVALID[]= "Undo not available";
 
     Board gameBoard;
     Card* deck = initList();

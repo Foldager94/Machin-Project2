@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "../include/board.h"
 #include "../include/gameState.h"
+#include "../include/deck.h"
 
 GameState* initGameState(){
     GameState* gameState = malloc(sizeof(GameState));
@@ -33,6 +34,16 @@ void changeGameState(Board* board, GameState* gameState, int gameStateCounter){
     }
 }
 
+void freeGameState(GameState* gameState){
+    for(int i = 0; i<7; i++){
+        if(i<4){
+            freeDeck(gameState->board->foundations[i]);
+        }
+        freeDeck(gameState->board->columns[i]);
+    }
+    free(gameState);
+}
+
 void removeGameState(GameState* gameState, int gameStateCounter){
     GameState* currentGameState = gameState->previous;
     for(int i = 0; i < gameStateCounter-1; i++){
@@ -41,7 +52,19 @@ void removeGameState(GameState* gameState, int gameStateCounter){
 
     gameState->previous = currentGameState->previous;
     currentGameState->previous->next = gameState;
+
+    while(true){
+        if(currentGameState->board==NULL){
+            break;
+        }
+        GameState* tmp;
+        tmp = currentGameState->next;
+        freeGameState(currentGameState);
+        currentGameState = tmp;
+    }
 }
+
+
 
 bool isAtBeginig(GameState* gameState, int gameStateCounter){
     GameState* currentGameState = gameState->previous;
