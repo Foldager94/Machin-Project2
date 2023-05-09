@@ -396,6 +396,10 @@ void runGame() {
 
                                         if (validateMoveToFoundation(toMove, destination)) {
                                             moveSingleCard(fromColumn, destination);
+                                            if(gameStateCounter != 0){
+                                                removeGameState(gameState, gameStateCounter);
+                                                gameStateCounter = 0;
+                                            }
                                             Board* lolBoard = makeBoardCopy(&gameBoard);
                                             saveGameState(lolBoard, gameState);
                                             if (checkWin(&gameBoard)) {
@@ -416,6 +420,10 @@ void runGame() {
                                         if (validateMoveToColumn(toMove, destination)) {
 
                                             moveListOfCards(toMove, fromColumn, destination->next);
+                                            if(gameStateCounter != 0){
+                                                removeGameState(gameState, gameStateCounter);
+                                                gameStateCounter = 0;
+                                            }
                                             Board* lolBoard = makeBoardCopy(&gameBoard);
                                             saveGameState(lolBoard, gameState);
                                             setCommandLine(&commandLine, OK, input);
@@ -434,6 +442,10 @@ void runGame() {
 
                                     if (validateMoveToFoundation(fromColumn->previous, destination)) {
                                         moveSingleCard(fromColumn, destination);
+                                        if(gameStateCounter != 0){
+                                            removeGameState(gameState, gameStateCounter);
+                                            gameStateCounter = 0;
+                                        }
                                         Board* lolBoard = makeBoardCopy(&gameBoard);
                                         saveGameState(lolBoard, gameState);
                                         if (checkWin(&gameBoard)) {
@@ -452,6 +464,10 @@ void runGame() {
 
                                     if (validateMoveToColumn(fromColumn->previous, destination)) {
                                         moveSingleCard(fromColumn, destination);
+                                        if(gameStateCounter != 0){
+                                            removeGameState(gameState, gameStateCounter);
+                                            gameStateCounter = 0;
+                                        }
                                         Board* lolBoard = makeBoardCopy(&gameBoard);
                                         saveGameState(lolBoard, gameState);
                                         setCommandLine(&commandLine, OK, input);
@@ -482,6 +498,10 @@ void runGame() {
                             //Check if piles are empty
                             if (validateMoveToColumn(toMove, destination)) {
                                 moveSingleCard(fromColumn, destination);
+                                if(gameStateCounter != 0){
+                                    removeGameState(gameState, gameStateCounter);
+                                    gameStateCounter = 0;
+                                }
                                 Board* lolBoard = makeBoardCopy(&gameBoard);
                                 saveGameState(lolBoard, gameState);
 
@@ -523,10 +543,14 @@ void runGame() {
                 gameStarted = !checkWin(&gameBoard);
             }
         }else if (toupper(input[0]) == 'U' && toupper(input[1]) == 'N' && toupper(input[2]) == 'D' && toupper(input[3]) == 'O') {
-
                 gameStateCounter++;
-                changeGameState(&gameBoard, gameState, gameStateCounter);
-                setCommandLine(&commandLine, OK, input);
+                if(isAtBeginig(gameState, gameStateCounter) == true) {
+                    changeGameState(&gameBoard, gameState, gameStateCounter);
+                    setCommandLine(&commandLine, OK, input);
+                }else{
+                    setCommandLine(&commandLine, ERROR, input);
+                    gameStateCounter--;
+                }
 
 
         }else if (toupper(input[0]) == 'R' && toupper(input[1]) == 'E' && toupper(input[2]) == 'D' && toupper(input[3]) == 'O') {

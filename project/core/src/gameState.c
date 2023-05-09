@@ -26,10 +26,32 @@ void changeGameState(Board* board, GameState* gameState, int gameStateCounter){
     for(int i = 0; i<gameStateCounter;i++){
         currentGameState = currentGameState->previous;
     }
+    Board* newBoard = makeBoardCopy(currentGameState->board);
     for (int i = 0; i < 7; i++) {
-        board->columns[i] = currentGameState->board->columns[i];
+        board->columns[i] = newBoard->columns[i];
         if(i < 4){
-            board->foundations[i] = currentGameState->board->foundations[i];
+            board->foundations[i] = newBoard->foundations[i];
         }
     }
+}
+
+void removeGameState(GameState* gameState, int gameStateCounter){
+    GameState* currentGameState = gameState->previous;
+    for(int i = 0; i < gameStateCounter-1; i++){
+        currentGameState = currentGameState->previous;
+    }
+
+    gameState->previous = currentGameState->previous;
+    currentGameState->previous->next = gameState;
+}
+
+bool isAtBeginig(GameState* gameState, int gameStateCounter){
+    GameState* currentGameState = gameState->previous;
+    for(int i = 0; i < gameStateCounter; i++){
+        currentGameState = currentGameState->previous;
+        if(currentGameState->board==NULL){
+            return false;
+        }
+    }
+    return true;
 }

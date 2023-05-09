@@ -16,4 +16,6 @@ typedef struct gameState{
 extern void saveGameState(Board* board, GameState* destination);
 extern GameState* initGameState();
 extern void changeGameState(Board* board, GameState* gameState, int gameStateCounter);
+extern void removeGameState(GameState* gameState, int gameStateCounter);
+extern bool isAtBeginig(GameState* gameState, int gameStateCounter);
 #endif //MACHIN_PROJECT2_GAMESTATE_H
