@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <time.h>
-#include "card.h"
+#include "../include/card.h"
 
 // ASCII decimal values from card values
 const int CARD_A = 65;

@@ -1,11 +1,11 @@
-#include "deck.h"
+#include "../include/deck.h"
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include "card.h"
+
 #define NUM_CARDS 52
-#define defaultPath "../project/core/src/unshuffled_deck.txt"
+#define defaultPath "unshuffled_deck.txt"
 #define LINE_SIZE 3
 
 #define ASCII_C 67

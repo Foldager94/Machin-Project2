@@ -1,7 +1,3 @@
-//
-// Created by Christoffer on 08-05-2023.
-//
-
 #ifndef MACHIN_PROJECT2_GAMESTATE_H
 #define MACHIN_PROJECT2_GAMESTATE_H
 
