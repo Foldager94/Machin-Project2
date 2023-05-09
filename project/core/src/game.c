@@ -1,9 +1,9 @@
 #include <stdio.h>
-#include "board.h"
-#include "card.h"
-#include "commandLine.h"
-#include "deck.h"
-#include "gameState.h"
+#include "../include/board.h"
+#include "../include/card.h"
+#include "../include/commandLine.h"
+#include "../include/deck.h"
+#include "../include/gameState.h"
 #include <stdbool.h>
 #include <stdlib.h>
 #include <ctype.h>

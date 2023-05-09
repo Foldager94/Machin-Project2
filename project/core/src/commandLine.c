@@ -3,7 +3,7 @@
 //
 #include <string.h>
 
-#include "commandLine.h"
+#include "../include/commandLine.h"
 
 
 //Print the commandline
