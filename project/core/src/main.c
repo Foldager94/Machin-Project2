@@ -1,6 +1,6 @@
 #include <string.h>
-#include "game.h"
-#include "test.h"yu
+#include "../include/game.h"
+#include "../include/test.h"
 
 const char argTest[] = "-test";
 

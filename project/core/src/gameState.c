@@ -1,8 +1,6 @@
 #include <stdlib.h>
-#include "board.h"
-#include "gameState.h"
-#include <stdio.h>
-
+#include "../include/board.h"
+#include "../include/gameState.h"
 
 GameState* initGameState(){
     GameState* gameState = malloc(sizeof(GameState));

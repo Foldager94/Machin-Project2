@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "card.h"
-#include "board.h"
+#include "../include/card.h"
+#include "../include/board.h"
 
 #define DECK_SIZE 52
 #define MIN_LINE_PRINT 8
